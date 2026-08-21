@@ -1,0 +1,14 @@
+{
+    "titillium web": {
+        "normal": "C:\\Users\\userJ\\Documents\\fortain\\storage\\fonts\/titillium_web_normal_510f2075c7ade869ea4437bbd2984e40",
+        "bold": "C:\\Users\\userJ\\Documents\\fortain\\storage\\fonts\/titillium_web_bold_ec5b35debffaaaf7ba005cfae8bfc496",
+        "italic": "C:\\Users\\userJ\\Documents\\fortain\\storage\\fonts\/titillium_web_italic_7227a26c394973b1c1f0306c1a7132ab",
+        "bold_italic": "titillium_web_bold_italic_789018b45fc89906f6244feea89ffb11"
+    },
+    "calibri": {
+        "normal": "C:\\Users\\userJ\\Documents\\fortain\\storage\\fonts\/calibri_normal_cfdc92a6034824fc5b3c0fbabd489f11",
+        "bold": "C:\\Users\\userJ\\Documents\\fortain\\storage\\fonts\/calibri_bold_70d9674ebea40a1d4145a65e0885e7c8",
+        "italic": "C:\\Users\\userJ\\Documents\\fortain\\storage\\fonts\/calibri_italic_0b040398ef2e379dc5357c370161e631",
+        "bold_italic": "calibri_bold_italic_59b80ff74dd99a85d1005909c042c63e"
+    }
+}

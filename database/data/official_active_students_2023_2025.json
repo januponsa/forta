@@ -1,0 +1,978 @@
+[
+  {
+    "no": 1,
+    "angkatan": 2023,
+    "no_per_angkatan": 1,
+    "nim": "2310101001",
+    "name": "MUHAMMAD SULTHAN ARIF RIZKY PRASETYO",
+    "email": "muhammad.sulthan@student.pradita.ac.id"
+  },
+  {
+    "no": 2,
+    "angkatan": 2023,
+    "no_per_angkatan": 2,
+    "nim": "2310101002",
+    "name": "DASON TIOVINO",
+    "email": "dason.tiovino@student.pradita.ac.id"
+  },
+  {
+    "no": 3,
+    "angkatan": 2023,
+    "no_per_angkatan": 3,
+    "nim": "2310101003",
+    "name": "MICKHAEL NIKLAS",
+    "email": "mickhael.niklas@student.pradita.ac.id"
+  },
+  {
+    "no": 4,
+    "angkatan": 2023,
+    "no_per_angkatan": 5,
+    "nim": "2310101005",
+    "name": "BRIAN ABRAHAM JORDAN SUNTPIET",
+    "email": "brian.abraham@student.pradita.ac.id"
+  },
+  {
+    "no": 5,
+    "angkatan": 2023,
+    "no_per_angkatan": 6,
+    "nim": "2310101007",
+    "name": "FARELL ALVARO THERIONO",
+    "email": "farell.alvaro@student.pradita.ac.id"
+  },
+  {
+    "no": 6,
+    "angkatan": 2023,
+    "no_per_angkatan": 7,
+    "nim": "2310101008",
+    "name": "KENNETH WILLIAM GUNAWAN",
+    "email": "kenneth.william@student.pradita.ac.id"
+  },
+  {
+    "no": 7,
+    "angkatan": 2023,
+    "no_per_angkatan": 8,
+    "nim": "2310101010",
+    "name": "ANDREW JATZEN LAY",
+    "email": "andrew.jatzen@student.pradita.ac.id"
+  },
+  {
+    "no": 8,
+    "angkatan": 2023,
+    "no_per_angkatan": 9,
+    "nim": "2310101011",
+    "name": "BRYAN ADIPUTRA ONGGO",
+    "email": "bryan.adiputra@student.pradita.ac.id"
+  },
+  {
+    "no": 9,
+    "angkatan": 2023,
+    "no_per_angkatan": 10,
+    "nim": "2310101012",
+    "name": "JONATHAN AXEL TEDY ASIHTO",
+    "email": "jonathan.axel@student.pradita.ac.id"
+  },
+  {
+    "no": 10,
+    "angkatan": 2023,
+    "no_per_angkatan": 11,
+    "nim": "2310101015",
+    "name": "MUHAMMAD WAHYU HIDAYAT",
+    "email": "muhammad.wahyu@student.pradita.ac.id"
+  },
+  {
+    "no": 11,
+    "angkatan": 2023,
+    "no_per_angkatan": 12,
+    "nim": "2310101016",
+    "name": "NAUFAL FADHILLA",
+    "email": "naufal.fadhilla@student.pradita.ac.id"
+  },
+  {
+    "no": 12,
+    "angkatan": 2023,
+    "no_per_angkatan": 13,
+    "nim": "2310101017",
+    "name": "ALEJANDRO RAFAEL",
+    "email": "alejandro.rafael@student.pradita.ac.id"
+  },
+  {
+    "no": 13,
+    "angkatan": 2023,
+    "no_per_angkatan": 14,
+    "nim": "2310101020",
+    "name": "WILLSON AUSTIN",
+    "email": "willson.austin@student.pradita.ac.id"
+  },
+  {
+    "no": 14,
+    "angkatan": 2023,
+    "no_per_angkatan": 15,
+    "nim": "2310101021",
+    "name": "AFFAN MAULANA",
+    "email": "affan.maulana@student.pradita.ac.id"
+  },
+  {
+    "no": 15,
+    "angkatan": 2023,
+    "no_per_angkatan": 16,
+    "nim": "2310101023",
+    "name": "ARIYA PANNA",
+    "email": "ariya.panna@student.pradita.ac.id"
+  },
+  {
+    "no": 16,
+    "angkatan": 2023,
+    "no_per_angkatan": 17,
+    "nim": "2310101024",
+    "name": "ASTRIA FEBRIAN ANGGRAINI",
+    "email": "astria.febrian@student.pradita.ac.id"
+  },
+  {
+    "no": 17,
+    "angkatan": 2023,
+    "no_per_angkatan": 18,
+    "nim": "2310101025",
+    "name": "NADYA RUDIE SUCIPTO",
+    "email": "nadya.rudie@student.pradita.ac.id"
+  },
+  {
+    "no": 18,
+    "angkatan": 2023,
+    "no_per_angkatan": 19,
+    "nim": "2310101026",
+    "name": "DEVIN TAN",
+    "email": "devin.tan@student.pradita.ac.id"
+  },
+  {
+    "no": 19,
+    "angkatan": 2023,
+    "no_per_angkatan": 20,
+    "nim": "2310101027",
+    "name": "FITRAH FEBRIAN LISTANTO",
+    "email": "fitrah.febrian@student.pradita.ac.id"
+  },
+  {
+    "no": 20,
+    "angkatan": 2023,
+    "no_per_angkatan": 21,
+    "nim": "2310101028",
+    "name": "BOY DEVIANO",
+    "email": "boy.deviano@student.pradita.ac.id"
+  },
+  {
+    "no": 21,
+    "angkatan": 2023,
+    "no_per_angkatan": 22,
+    "nim": "2310101031",
+    "name": "RIVANDI ZEIN SAPUTRA",
+    "email": "rivandi.zein@student.pradita.ac.id"
+  },
+  {
+    "no": 22,
+    "angkatan": 2023,
+    "no_per_angkatan": 23,
+    "nim": "2310101032",
+    "name": "KENNETH LODEWIJK IBRAHIM",
+    "email": "kenneth.lodewijk@student.pradita.ac.id"
+  },
+  {
+    "no": 23,
+    "angkatan": 2023,
+    "no_per_angkatan": 24,
+    "nim": "2310101035",
+    "name": "ERDINE A. TIMOTHY",
+    "email": "erdine.a.@student.pradita.ac.id"
+  },
+  {
+    "no": 24,
+    "angkatan": 2023,
+    "no_per_angkatan": 25,
+    "nim": "2310101036",
+    "name": "MUHAMMAD ZIKRY ANDRIAN ARDIANSYAH",
+    "email": "muhammad.zikry@student.pradita.ac.id"
+  },
+  {
+    "no": 25,
+    "angkatan": 2023,
+    "no_per_angkatan": 26,
+    "nim": "2310101033",
+    "name": "HANS HANDRI TANUJAYA",
+    "email": "hans.handri@student.pradita.ac.id"
+  },
+  {
+    "no": 26,
+    "angkatan": 2024,
+    "no_per_angkatan": 1,
+    "nim": "2410101001",
+    "name": "WESLEY MAXIMILLIAN LAY",
+    "email": "wesley.maximillian@student.pradita.ac.id"
+  },
+  {
+    "no": 27,
+    "angkatan": 2024,
+    "no_per_angkatan": 2,
+    "nim": "2410101002",
+    "name": "JOVAN VITO VIANI",
+    "email": "jovan.vito@student.pradita.ac.id"
+  },
+  {
+    "no": 28,
+    "angkatan": 2024,
+    "no_per_angkatan": 3,
+    "nim": "2410101003",
+    "name": "RHIFQI SYAHPUTRA PRIYAMBODO",
+    "email": "rhifqi.syahputra@student.pradita.ac.id"
+  },
+  {
+    "no": 29,
+    "angkatan": 2024,
+    "no_per_angkatan": 4,
+    "nim": "2410101004",
+    "name": "BRYAN CHANDRA",
+    "email": "bryan.chandra@student.pradita.ac.id"
+  },
+  {
+    "no": 30,
+    "angkatan": 2024,
+    "no_per_angkatan": 5,
+    "nim": "2410101005",
+    "name": "EKAHADI LUTHFI TEDJA",
+    "email": "ekahadi.luthfi@student.pradita.ac.id"
+  },
+  {
+    "no": 31,
+    "angkatan": 2024,
+    "no_per_angkatan": 6,
+    "nim": "2410101006",
+    "name": "BENTLEY ARSHAVIN",
+    "email": "bentley.arshavin@student.pradita.ac.id"
+  },
+  {
+    "no": 32,
+    "angkatan": 2024,
+    "no_per_angkatan": 7,
+    "nim": "2410101008",
+    "name": "CEELEY RICHELA",
+    "email": "ceeley.richela@student.pradita.ac.id"
+  },
+  {
+    "no": 33,
+    "angkatan": 2024,
+    "no_per_angkatan": 8,
+    "nim": "2410101009",
+    "name": "CYRIL NATASHA SETIAWAN",
+    "email": "cyril.natasha@student.pradita.ac.id"
+  },
+  {
+    "no": 34,
+    "angkatan": 2024,
+    "no_per_angkatan": 9,
+    "nim": "2410101010",
+    "name": "MUHAMMAD ARIQ FAKHRIZAKI PRABOWO",
+    "email": "muhammad.ariq@student.pradita.ac.id"
+  },
+  {
+    "no": 35,
+    "angkatan": 2024,
+    "no_per_angkatan": 10,
+    "nim": "2410101011",
+    "name": "NICOLAS JULIAN KURNIA PURWANTORO",
+    "email": "nicolas.julian@student.pradita.ac.id"
+  },
+  {
+    "no": 36,
+    "angkatan": 2024,
+    "no_per_angkatan": 11,
+    "nim": "2410101012",
+    "name": "PIUS PETRA LOVINNO",
+    "email": "pius.petra@student.pradita.ac.id"
+  },
+  {
+    "no": 37,
+    "angkatan": 2024,
+    "no_per_angkatan": 12,
+    "nim": "2410101013",
+    "name": "DIERLYAWAN WIGUNA",
+    "email": "dierlyawan.wiguna@student.pradita.ac.id"
+  },
+  {
+    "no": 38,
+    "angkatan": 2024,
+    "no_per_angkatan": 13,
+    "nim": "2410101014",
+    "name": "STEPHANIE CHANDRA",
+    "email": "stephanie.chandra@student.pradita.ac.id"
+  },
+  {
+    "no": 39,
+    "angkatan": 2024,
+    "no_per_angkatan": 14,
+    "nim": "2410101015",
+    "name": "EBEN HEZER WANGSA DJAJA",
+    "email": "eben.hezer@student.pradita.ac.id"
+  },
+  {
+    "no": 40,
+    "angkatan": 2024,
+    "no_per_angkatan": 15,
+    "nim": "2410101016",
+    "name": "KEVIN SEBASTIAN WIBOWO",
+    "email": "kevin.sebastian@student.pradita.ac.id"
+  },
+  {
+    "no": 41,
+    "angkatan": 2024,
+    "no_per_angkatan": 16,
+    "nim": "2410101017",
+    "name": "MARK JUSTIN GUNAWAN",
+    "email": "mark.justin@student.pradita.ac.id"
+  },
+  {
+    "no": 42,
+    "angkatan": 2024,
+    "no_per_angkatan": 17,
+    "nim": "2410101018",
+    "name": "LUISA HANING TYAS",
+    "email": "luisa.haning@student.pradita.ac.id"
+  },
+  {
+    "no": 43,
+    "angkatan": 2024,
+    "no_per_angkatan": 18,
+    "nim": "2410101019",
+    "name": "TIMOTHY ALBERT PRATAMA",
+    "email": "timothy.albert@student.pradita.ac.id"
+  },
+  {
+    "no": 44,
+    "angkatan": 2024,
+    "no_per_angkatan": 19,
+    "nim": "2410101021",
+    "name": "MICHAEL CHIANG",
+    "email": "michael.chiang@student.pradita.ac.id"
+  },
+  {
+    "no": 45,
+    "angkatan": 2024,
+    "no_per_angkatan": 20,
+    "nim": "2410101024",
+    "name": "JAMES TAN",
+    "email": "james.tan@student.pradita.ac.id"
+  },
+  {
+    "no": 46,
+    "angkatan": 2024,
+    "no_per_angkatan": 21,
+    "nim": "2410101025",
+    "name": "MIKO AFRIAN PEREY",
+    "email": "miko.afrian@student.pradita.ac.id"
+  },
+  {
+    "no": 47,
+    "angkatan": 2024,
+    "no_per_angkatan": 22,
+    "nim": "2410101027",
+    "name": "WILLY",
+    "email": "willy@student.pradita.ac.id"
+  },
+  {
+    "no": 48,
+    "angkatan": 2024,
+    "no_per_angkatan": 23,
+    "nim": "2410101028",
+    "name": "FAHREL HAFIZ AMARAL HAQ",
+    "email": "fahrel.hafiz@student.pradita.ac.id"
+  },
+  {
+    "no": 49,
+    "angkatan": 2024,
+    "no_per_angkatan": 24,
+    "nim": "2410101030",
+    "name": "DEWA RESTU SATRIA",
+    "email": "dewa.restu@student.pradita.ac.id"
+  },
+  {
+    "no": 50,
+    "angkatan": 2024,
+    "no_per_angkatan": 25,
+    "nim": "2410101031",
+    "name": "FAIZ EKA SAKTI",
+    "email": "faiz.eka@student.pradita.ac.id"
+  },
+  {
+    "no": 51,
+    "angkatan": 2024,
+    "no_per_angkatan": 26,
+    "nim": "2410101032",
+    "name": "IMANUEL JONATAN",
+    "email": "imanuel.jonatan@student.pradita.ac.id"
+  },
+  {
+    "no": 52,
+    "angkatan": 2024,
+    "no_per_angkatan": 27,
+    "nim": "2410101033",
+    "name": "MICHAEL HANSEL",
+    "email": "michael.hansel@student.pradita.ac.id"
+  },
+  {
+    "no": 53,
+    "angkatan": 2024,
+    "no_per_angkatan": 28,
+    "nim": "2410101034",
+    "name": "HENGKY",
+    "email": "hengky@student.pradita.ac.id"
+  },
+  {
+    "no": 54,
+    "angkatan": 2024,
+    "no_per_angkatan": 29,
+    "nim": "2410101035",
+    "name": "DAVID CUNGNIAGO",
+    "email": "david.cungniago@student.pradita.ac.id"
+  },
+  {
+    "no": 55,
+    "angkatan": 2024,
+    "no_per_angkatan": 30,
+    "nim": "2410101036",
+    "name": "GIVEN",
+    "email": "given@student.pradita.ac.id"
+  },
+  {
+    "no": 56,
+    "angkatan": 2024,
+    "no_per_angkatan": 31,
+    "nim": "2410101037",
+    "name": "JIMMY CHEN",
+    "email": "jimmy.chen@student.pradita.ac.id"
+  },
+  {
+    "no": 57,
+    "angkatan": 2024,
+    "no_per_angkatan": 32,
+    "nim": "2410101038",
+    "name": "KHIAR ZAKI MAULANA",
+    "email": "khiar.zaki@student.pradita.ac.id"
+  },
+  {
+    "no": 58,
+    "angkatan": 2024,
+    "no_per_angkatan": 33,
+    "nim": "2410101039",
+    "name": "GABRIEL CUPIDO KURNIAWAN",
+    "email": "gabriel.cupido@student.pradita.ac.id"
+  },
+  {
+    "no": 59,
+    "angkatan": 2024,
+    "no_per_angkatan": 34,
+    "nim": "2410101040",
+    "name": "MARCELINO RIZALDI",
+    "email": "marcelino.rizaldi@student.pradita.ac.id"
+  },
+  {
+    "no": 60,
+    "angkatan": 2024,
+    "no_per_angkatan": 35,
+    "nim": "2410101041",
+    "name": "JAMES EDISON WIHARDJA",
+    "email": "james.edison@student.pradita.ac.id"
+  },
+  {
+    "no": 61,
+    "angkatan": 2024,
+    "no_per_angkatan": 36,
+    "nim": "2410101043",
+    "name": "CELINE MERCY TAASIRINGAN",
+    "email": "celine.mercy@student.pradita.ac.id"
+  },
+  {
+    "no": 62,
+    "angkatan": 2024,
+    "no_per_angkatan": 37,
+    "nim": "2410101044",
+    "name": "CYNTHIA KEISHA",
+    "email": "cynthia.keisha@student.pradita.ac.id"
+  },
+  {
+    "no": 63,
+    "angkatan": 2024,
+    "no_per_angkatan": 38,
+    "nim": "2410101045",
+    "name": "MATTHEW KEANE",
+    "email": "matthew.keane@student.pradita.ac.id"
+  },
+  {
+    "no": 64,
+    "angkatan": 2024,
+    "no_per_angkatan": 39,
+    "nim": "2410101046",
+    "name": "WILLIAM SHE PUTRA",
+    "email": "william.she@student.pradita.ac.id"
+  },
+  {
+    "no": 65,
+    "angkatan": 2024,
+    "no_per_angkatan": 40,
+    "nim": "2410101047",
+    "name": "HUGO ALEXANDER TANOTO",
+    "email": "hugo.alexander@student.pradita.ac.id"
+  },
+  {
+    "no": 66,
+    "angkatan": 2025,
+    "no_per_angkatan": 1,
+    "nim": "2510101001",
+    "name": "ALBERT KRISHER CHU",
+    "email": "albert.krisher@student.pradita.ac.id"
+  },
+  {
+    "no": 67,
+    "angkatan": 2025,
+    "no_per_angkatan": 2,
+    "nim": "2510101002",
+    "name": "FREDERIC EMMANUEL",
+    "email": "frederic.emmanuel@student.pradita.ac.id"
+  },
+  {
+    "no": 68,
+    "angkatan": 2025,
+    "no_per_angkatan": 3,
+    "nim": "2510101003",
+    "name": "DAVIN CORNELIUS",
+    "email": "davin.cornelius@student.pradita.ac.id"
+  },
+  {
+    "no": 69,
+    "angkatan": 2025,
+    "no_per_angkatan": 4,
+    "nim": "2510101004",
+    "name": "ALDRY CHIAYARDI",
+    "email": "aldry.chiayardi@student.pradita.ac.id"
+  },
+  {
+    "no": 70,
+    "angkatan": 2025,
+    "no_per_angkatan": 5,
+    "nim": "2510101005",
+    "name": "Inas Tsabitah Dien",
+    "email": "inas.tsabitah@student.pradita.ac.id"
+  },
+  {
+    "no": 71,
+    "angkatan": 2025,
+    "no_per_angkatan": 6,
+    "nim": "2510101006",
+    "name": "FIRMAN FELIX NDURU",
+    "email": "firman.felix@student.pradita.ac.id"
+  },
+  {
+    "no": 72,
+    "angkatan": 2025,
+    "no_per_angkatan": 7,
+    "nim": "2510101007",
+    "name": "NEILVENT VICTOR CHENARIAS",
+    "email": "neilvent.victor@student.pradita.ac.id"
+  },
+  {
+    "no": 73,
+    "angkatan": 2025,
+    "no_per_angkatan": 8,
+    "nim": "2510101008",
+    "name": "SYAFIQ SADIDDUL AZMI",
+    "email": "syafiq.sadiddul@student.pradita.ac.id"
+  },
+  {
+    "no": 74,
+    "angkatan": 2025,
+    "no_per_angkatan": 9,
+    "nim": "2510101009",
+    "name": "ALVINE TANSRI",
+    "email": "alvine.tansri@student.pradita.ac.id"
+  },
+  {
+    "no": 75,
+    "angkatan": 2025,
+    "no_per_angkatan": 10,
+    "nim": "2510101010",
+    "name": "FELIX THEODORE",
+    "email": "felix.theodore@student.pradita.ac.id"
+  },
+  {
+    "no": 76,
+    "angkatan": 2025,
+    "no_per_angkatan": 11,
+    "nim": "2510101011",
+    "name": "SANATA RIJALUL FALAH KADARISMAN",
+    "email": "sanata.rijalul@student.pradita.ac.id"
+  },
+  {
+    "no": 77,
+    "angkatan": 2025,
+    "no_per_angkatan": 12,
+    "nim": "2510101012",
+    "name": "DAFFA ABDUR RASYID",
+    "email": "daffa.abdur@student.pradita.ac.id"
+  },
+  {
+    "no": 78,
+    "angkatan": 2025,
+    "no_per_angkatan": 13,
+    "nim": "2510101013",
+    "name": "FISKO ARITMATIKA YURI",
+    "email": "fisko.aritmatika@student.pradita.ac.id"
+  },
+  {
+    "no": 79,
+    "angkatan": 2025,
+    "no_per_angkatan": 14,
+    "nim": "2510101014",
+    "name": "RAZAN RAFI AKMALUZZUHAIR",
+    "email": "razan.rafi@student.pradita.ac.id"
+  },
+  {
+    "no": 80,
+    "angkatan": 2025,
+    "no_per_angkatan": 15,
+    "nim": "2510101015",
+    "name": "MUHAMMAD RAFI AL FATIH",
+    "email": "muhammad.rafi@student.pradita.ac.id"
+  },
+  {
+    "no": 81,
+    "angkatan": 2025,
+    "no_per_angkatan": 16,
+    "nim": "2510101017",
+    "name": "ADITYA PRATAMA HUTOMO ALIAS KWA THIAN SIN",
+    "email": "aditya.pratama@student.pradita.ac.id"
+  },
+  {
+    "no": 82,
+    "angkatan": 2025,
+    "no_per_angkatan": 17,
+    "nim": "2510101018",
+    "name": "SHAKILA RAFIFAH ISDA PUTRI",
+    "email": "shakila.rafifah@student.pradita.ac.id"
+  },
+  {
+    "no": 83,
+    "angkatan": 2025,
+    "no_per_angkatan": 18,
+    "nim": "2510101019",
+    "name": "MARSEKAL MARKHE RONDONUWU",
+    "email": "marsekal.markhe@student.pradita.ac.id"
+  },
+  {
+    "no": 84,
+    "angkatan": 2025,
+    "no_per_angkatan": 19,
+    "nim": "2510101020",
+    "name": "SHANTITA PROMETTA",
+    "email": "shantita.prometta@student.pradita.ac.id"
+  },
+  {
+    "no": 85,
+    "angkatan": 2025,
+    "no_per_angkatan": 20,
+    "nim": "2510101021",
+    "name": "VIREN CHANDRU KUMAR",
+    "email": "viren.chandru@student.pradita.ac.id"
+  },
+  {
+    "no": 86,
+    "angkatan": 2025,
+    "no_per_angkatan": 21,
+    "nim": "2510101022",
+    "name": "MUHAMMAD RAFIF ABRAR",
+    "email": "muhammad.rafif@student.pradita.ac.id"
+  },
+  {
+    "no": 87,
+    "angkatan": 2025,
+    "no_per_angkatan": 22,
+    "nim": "2510101023",
+    "name": "HYLMI RASHID AYDIN",
+    "email": "hylmi.rashid@student.pradita.ac.id"
+  },
+  {
+    "no": 88,
+    "angkatan": 2025,
+    "no_per_angkatan": 23,
+    "nim": "2510101024",
+    "name": "GHASSAN RIZKI RUSMANA",
+    "email": "ghassan.rizki@student.pradita.ac.id"
+  },
+  {
+    "no": 89,
+    "angkatan": 2025,
+    "no_per_angkatan": 24,
+    "nim": "2510101025",
+    "name": "CORLINE SHEREN HARLI",
+    "email": "corline.sheren@student.pradita.ac.id"
+  },
+  {
+    "no": 90,
+    "angkatan": 2025,
+    "no_per_angkatan": 25,
+    "nim": "2510101026",
+    "name": "ALFIO ACNEILSEN",
+    "email": "alfio.acneilsen@student.pradita.ac.id"
+  },
+  {
+    "no": 91,
+    "angkatan": 2025,
+    "no_per_angkatan": 26,
+    "nim": "2510101027",
+    "name": "DIMAS AKMAL MUZAKKI",
+    "email": "dimas.akmal@student.pradita.ac.id"
+  },
+  {
+    "no": 92,
+    "angkatan": 2025,
+    "no_per_angkatan": 27,
+    "nim": "2510101028",
+    "name": "BIJAN LUNGGA BHASMARA",
+    "email": "bijan.lungga@student.pradita.ac.id"
+  },
+  {
+    "no": 93,
+    "angkatan": 2025,
+    "no_per_angkatan": 28,
+    "nim": "2510101029",
+    "name": "FARIDZ ARYA PASCAL",
+    "email": "faridz.arya@student.pradita.ac.id"
+  },
+  {
+    "no": 94,
+    "angkatan": 2025,
+    "no_per_angkatan": 29,
+    "nim": "2510101030",
+    "name": "MUHAMMAD RIDHO HIBATULLOH",
+    "email": "muhammad.ridho@student.pradita.ac.id"
+  },
+  {
+    "no": 95,
+    "angkatan": 2025,
+    "no_per_angkatan": 30,
+    "nim": "2510101031",
+    "name": "SINDAR FELIX SIHOLE",
+    "email": "sindar.felix@student.pradita.ac.id"
+  },
+  {
+    "no": 96,
+    "angkatan": 2025,
+    "no_per_angkatan": 31,
+    "nim": "2510101032",
+    "name": "MIFTAHUL MIDZAN NUR BAHRI",
+    "email": "miftahul.midzan@student.pradita.ac.id"
+  },
+  {
+    "no": 97,
+    "angkatan": 2025,
+    "no_per_angkatan": 32,
+    "nim": "2510101033",
+    "name": "SAZKIA HERFI SAKINAH",
+    "email": "sazkia.herfi@student.pradita.ac.id"
+  },
+  {
+    "no": 98,
+    "angkatan": 2025,
+    "no_per_angkatan": 33,
+    "nim": "2510101034",
+    "name": "WINSTAR SANTIAGO",
+    "email": "winstar.santiago@student.pradita.ac.id"
+  },
+  {
+    "no": 99,
+    "angkatan": 2025,
+    "no_per_angkatan": 34,
+    "nim": "2510101035",
+    "name": "DEVIN DARMAWAN",
+    "email": "devin.darmawan@student.pradita.ac.id"
+  },
+  {
+    "no": 100,
+    "angkatan": 2025,
+    "no_per_angkatan": 35,
+    "nim": "2510101036",
+    "name": "MAXMILLIANO GHAZYLLAH BUDI JUNIOR",
+    "email": "maxmilliano.ghazyllah@student.pradita.ac.id"
+  },
+  {
+    "no": 101,
+    "angkatan": 2025,
+    "no_per_angkatan": 36,
+    "nim": "2510101037",
+    "name": "NICHOLAS WIJAYA",
+    "email": "nicholas.wijaya@student.pradita.ac.id"
+  },
+  {
+    "no": 102,
+    "angkatan": 2025,
+    "no_per_angkatan": 37,
+    "nim": "2510101038",
+    "name": "SYDNEY CALISTA",
+    "email": "sydney.calista@student.pradita.ac.id"
+  },
+  {
+    "no": 103,
+    "angkatan": 2025,
+    "no_per_angkatan": 38,
+    "nim": "2510101046",
+    "name": "VYRGI RAPABEL FEVALEND",
+    "email": "vyrgi.rapabel@student.pradita.ac.id"
+  },
+  {
+    "no": 104,
+    "angkatan": 2025,
+    "no_per_angkatan": 39,
+    "nim": "2510101048",
+    "name": "DANIEL ABNER",
+    "email": "daniel.abner@student.pradita.ac.id"
+  },
+  {
+    "no": 105,
+    "angkatan": 2025,
+    "no_per_angkatan": 40,
+    "nim": "2510101049",
+    "name": "PUTRA MALIKI RAMADHAN",
+    "email": "putra.maliki@student.pradita.ac.id"
+  },
+  {
+    "no": 106,
+    "angkatan": 2025,
+    "no_per_angkatan": 41,
+    "nim": "2510101050",
+    "name": "MARCHEL YOSIA PARLINDUNGAN SIAHAAN",
+    "email": "marchel.yosia@student.pradita.ac.id"
+  },
+  {
+    "no": 107,
+    "angkatan": 2025,
+    "no_per_angkatan": 42,
+    "nim": "2510101051",
+    "name": "SANTOS",
+    "email": "santos@student.pradita.ac.id"
+  },
+  {
+    "no": 108,
+    "angkatan": 2025,
+    "no_per_angkatan": 43,
+    "nim": "2510101053",
+    "name": "PASCAL EYOTA LUKMAN",
+    "email": "pascal.eyota@student.pradita.ac.id"
+  },
+  {
+    "no": 109,
+    "angkatan": 2025,
+    "no_per_angkatan": 44,
+    "nim": "2510101055",
+    "name": "MISBAHUL HABIBI",
+    "email": "misbahul.habibi@student.pradita.ac.id"
+  },
+  {
+    "no": 110,
+    "angkatan": 2025,
+    "no_per_angkatan": 45,
+    "nim": "2510101056",
+    "name": "VIVIANG WENNIE",
+    "email": "viviang.wennie@student.pradita.ac.id"
+  },
+  {
+    "no": 111,
+    "angkatan": 2025,
+    "no_per_angkatan": 46,
+    "nim": "2510101057",
+    "name": "LEONARD YEOH",
+    "email": "leonard.yeoh@student.pradita.ac.id"
+  },
+  {
+    "no": 112,
+    "angkatan": 2025,
+    "no_per_angkatan": 47,
+    "nim": "2510101058",
+    "name": "YOHAN S JALU PRAKASA",
+    "email": "yohan.s@student.pradita.ac.id"
+  },
+  {
+    "no": 113,
+    "angkatan": 2025,
+    "no_per_angkatan": 48,
+    "nim": "2510101059",
+    "name": "FARHAN NIZAM SYA'BAN AL BANTA",
+    "email": "farhan.nizam@student.pradita.ac.id"
+  },
+  {
+    "no": 114,
+    "angkatan": 2025,
+    "no_per_angkatan": 49,
+    "nim": "2510101060",
+    "name": "MUHAMMAD RIZQI HANIF",
+    "email": "muhammad.rizqi@student.pradita.ac.id"
+  },
+  {
+    "no": 115,
+    "angkatan": 2025,
+    "no_per_angkatan": 50,
+    "nim": "2510101061",
+    "name": "WIJDAN YAZID ANANDA",
+    "email": "wijdan.yazid@student.pradita.ac.id"
+  },
+  {
+    "no": 116,
+    "angkatan": 2025,
+    "no_per_angkatan": 51,
+    "nim": "2510101062",
+    "name": "RICHKY RIFADI",
+    "email": "richky.rifadi@student.pradita.ac.id"
+  },
+  {
+    "no": 117,
+    "angkatan": 2025,
+    "no_per_angkatan": 52,
+    "nim": "2510101064",
+    "name": "ATHIF KHAIRULLAH",
+    "email": "athif.khairullah@student.pradita.ac.id"
+  },
+  {
+    "no": 118,
+    "angkatan": 2025,
+    "no_per_angkatan": 53,
+    "nim": "2510101069",
+    "name": "ANTONIUS ARRYA AL YOHRI",
+    "email": "antonius.arrya@student.pradita.ac.id"
+  },
+  {
+    "no": 119,
+    "angkatan": 2025,
+    "no_per_angkatan": 54,
+    "nim": "2510101070",
+    "name": "MUHAMMAD FIKA AULIA RIZQI",
+    "email": "muhammad.fika@student.pradita.ac.id"
+  },
+  {
+    "no": 120,
+    "angkatan": 2025,
+    "no_per_angkatan": 55,
+    "nim": "2510101071",
+    "name": "RANU IKRAM MILAN LONDI",
+    "email": "ranu.ikram@student.pradita.ac.id"
+  },
+  {
+    "no": 121,
+    "angkatan": 2025,
+    "no_per_angkatan": 56,
+    "nim": "2510101074",
+    "name": "RIDHO PASHA DWI KURNIAWAN",
+    "email": "ridho.pasha@student.pradita.ac.id"
+  },
+  {
+    "no": 122,
+    "angkatan": 2025,
+    "no_per_angkatan": 57,
+    "nim": "2510101075",
+    "name": "GABRIEL BENNY THEODORE SIMANJUNTAK",
+    "email": "gabriel.benny@student.pradita.ac.id"
+  }
+]
