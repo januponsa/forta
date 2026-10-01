@@ -28,11 +28,11 @@ class InternshipLetterPdfService
             // New Flow
             $data = [
                 'nomor_surat' => $request->letter_number ?? '[Nomor Surat]',
-                'tanggal_terbit' => Carbon::now()->locale('id')->isoFormat('D MMMM YYYY'),
+                'tanggal_terbit' => $request->letter_date ? $request->letter_date->locale('id')->isoFormat('D MMMM YYYY') : Carbon::now()->locale('id')->isoFormat('D MMMM YYYY'),
                 'nama_mahasiswa' => $request->student->name ?? '[Nama Mahasiswa]',
                 'nim' => $request->student->nim ?? '[NIM]',
                 'program_studi' => 'Informatika',
-                'semester' => $request->student->semester ?? '[Semester]',
+                'semester' => $request->semester ?? $request->student->semester ?? '[Semester]',
                 'nama_perusahaan' => $request->company_name,
                 'alamat_perusahaan' => $request->company_address,
                 'kota_perusahaan' => $request->company_city,
@@ -73,7 +73,7 @@ class InternshipLetterPdfService
             'purpose' => $purpose,
             'closing' => $closing,
             'letterNumber' => $request->letter_number,
-            'date' => Carbon::now()->locale('id')->isoFormat('D MMMM YYYY'),
+            'date' => $request->letter_date ? $request->letter_date->locale('id')->isoFormat('D MMMM YYYY') : Carbon::now()->locale('id')->isoFormat('D MMMM YYYY'),
         ])->render();
 
         return Browsershot::html($html)

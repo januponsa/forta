@@ -124,6 +124,33 @@
                     @error('lecturer_id') <span class="text-xs text-red-500">{{ $message }}</span> @enderror
                 </div>
             </div>
+            
+            <div class="px-6 py-4 border-t border-gray-200 bg-gray-50 mt-6">
+                <h3 class="text-md font-medium text-gray-900">Otomatisasi Tanda Tangan (Opsional)</h3>
+                <p class="text-xs text-gray-500">Jika diisi, penempatan tanda tangan akan otomatis pada saat surat disetujui, tanpa perlu manual drag & drop.</p>
+            </div>
+            <div class="p-6 grid grid-cols-2 md:grid-cols-5 gap-6">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Halaman</label>
+                    <input type="number" wire:model="sig_page" class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Posisi X</label>
+                    <input type="number" wire:model="sig_x" class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" placeholder="Contoh: 120">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Posisi Y</label>
+                    <input type="number" wire:model="sig_y" class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" placeholder="Contoh: 200">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Lebar (Width)</label>
+                    <input type="number" wire:model="sig_width" class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Tinggi (Height)</label>
+                    <input type="number" wire:model="sig_height" class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
+                </div>
+            </div>
         </div>
 
         <!-- Margin Kertas -->

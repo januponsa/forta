@@ -265,7 +265,7 @@ class FormManager extends Component
             'title' => 'required|string|max:255',
             'description' => 'nullable|string',
             'activity_type_id' => 'required|exists:activity_types,id',
-            'phase' => 'required|string|max:255',
+            'phase' => 'required|in:registration,reporting',
             'semester' => 'required|string|max:255',
             'open_at' => 'nullable|date',
             'close_at' => 'nullable|date|after_or_equal:open_at',

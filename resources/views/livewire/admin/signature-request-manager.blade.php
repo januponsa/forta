@@ -47,9 +47,13 @@
                     <td class="py-2 px-4">{{ $request->lecturer->name ?? '-' }}</td>
                     <td class="py-2 px-4">
                         @if($request->status == 'completed')
-                            <span class="px-2 py-1 bg-green-200 text-green-800 rounded-full text-xs">Selesai</span>
+                            <span class="px-2 py-1 bg-green-200 text-green-800 rounded-full text-xs font-semibold">Email Terkirim</span>
                         @elseif($request->status == 'rejected')
                             <span class="px-2 py-1 bg-red-200 text-red-800 rounded-full text-xs">Ditolak</span>
+                        @elseif($request->status == 'approved' || $request->status == 'signed')
+                            <span class="px-2 py-1 bg-blue-200 text-blue-800 rounded-full text-xs font-semibold">Sudah DTTD (Menunggu Email)</span>
+                        @elseif($request->status == 'email_failed')
+                            <span class="px-2 py-1 bg-red-200 text-red-800 rounded-full text-xs font-semibold" title="Gagal mengirim email">Gagal Email</span>
                         @else
                             <span class="px-2 py-1 bg-yellow-200 text-yellow-800 rounded-full text-xs">{{ ucfirst(str_replace('_', ' ', $request->status)) }}</span>
                         @endif
@@ -102,22 +106,39 @@
 
                 <!-- Lecturer Selector -->
                 <div class="mb-6 p-4 border border-blue-200 bg-blue-50 rounded-lg">
-                    <label class="block text-blue-800 text-sm font-bold mb-2">Pilih Penandatangan <span class="text-red-500">*</span></label>
+                    <div class="flex justify-between items-center mb-3">
+                        <label class="block text-blue-800 text-sm font-bold">Penandatangan <span class="text-red-500">*</span></label>
+                        <button wire:click="addPlacement" class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded text-xs font-bold shadow"><i class="fas fa-plus mr-1"></i> Tambah TTD (Hal. ini)</button>
+                    </div>
                     
                     @if(count($availableLecturers) > 0)
-                        <select wire:model.live="selectedLecturerId" class="shadow border border-blue-300 rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500">
-                            <option value="">-- Wajib Pilih Penandatangan --</option>
-                            @foreach($availableLecturers as $lec)
-                                <option value="{{ $lec->id }}">{{ $lec->name }} - {{ $lec->position }}</option>
-                            @endforeach
-                        </select>
-                        @if(!$selectedLecturerId)
+                        @foreach($placements as $index => $placement)
+                            <div class="bg-white p-3 rounded shadow-sm mb-3 border border-gray-200 relative">
+                                <div class="flex justify-between items-center mb-2">
+                                    <span class="font-semibold text-gray-700 text-sm">Tanda Tangan #{{ $index + 1 }} (Halaman {{ $placement['page'] }})</span>
+                                    @if(count($placements) > 1)
+                                        <button wire:click="removePlacement({{ $index }})" class="text-red-500 hover:text-red-700 text-sm"><i class="fas fa-trash"></i> Hapus</button>
+                                    @endif
+                                </div>
+                                <select wire:model.live="placements.{{ $index }}.lecturer_id" class="shadow border border-blue-300 rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500 mb-2">
+                                    <option value="">-- Pilih Penandatangan --</option>
+                                    @foreach($availableLecturers as $lec)
+                                        <option value="{{ $lec->id }}">{{ $lec->name }} - {{ $lec->position }}</option>
+                                    @endforeach
+                                </select>
+                                <label class="inline-flex items-center mt-2 cursor-pointer">
+                                    <input type="checkbox" wire:model.live="placements.{{ $index }}.include_stamp" class="form-checkbox h-4 w-4 text-blue-600 rounded">
+                                    <span class="ml-2 text-sm text-gray-700 font-medium">Sertakan Stempel Jabatan</span>
+                                </label>
+                            </div>
+                        @endforeach
+                        @if(empty($placements[0]['lecturer_id']))
                             <p class="text-red-500 text-xs mt-2 font-bold"><i class="fas fa-exclamation-triangle mr-1"></i> Anda tidak bisa menyetujui pengajuan sebelum memilih penandatangan.</p>
                         @endif
                     @else
                         <div class="p-3 bg-red-100 text-red-800 rounded border border-red-300">
                             <strong>Peringatan!</strong> Belum ada penandatangan aktif yang dapat Anda gunakan. Tambahkan atau aktifkan penandatangan melalui 
-                            <a href="{{ route('admin.signatories.index') }}" class="font-bold underline text-blue-600 hover:text-blue-800">Pengaturan Penandatangan Surat</a>.
+                            <a href="{{ route('admin.lecturers') }}" class="font-bold underline text-blue-600 hover:text-blue-800">Pengaturan Penandatangan Surat</a>.
                         </div>
                     @endif
                 </div>
@@ -144,32 +165,46 @@
                         <p class="text-gray-800 font-bold" id="pdfErrorMessage">Gagal memuat PDF.</p>
                     </div>
                     
-                    <div id="pdfStage" wire:ignore class="relative inline-block shadow-lg bg-white" style="touch-action: none;">
-                        <canvas id="pdfCanvas" class="block"></canvas>
+                    <div id="pdfStage" wire:ignore.self class="relative inline-block shadow-lg bg-white" style="touch-action: none;">
+                        <canvas id="pdfCanvas" wire:ignore class="block"></canvas>
                         
-                        <!-- Draggable Box -->
-                        <div id="signatureBox" class="absolute border-2 border-dashed border-blue-500 bg-blue-100 bg-opacity-50 flex items-center justify-center overflow-hidden" 
-                             style="width: 150px; height: 75px; top: 10px; left: 10px; display: none; touch-action: none;">
-                            
-                            @if($selectedLecturerSignatureUrl)
-                                <img src="{{ $selectedLecturerSignatureUrl }}" alt="Signature Preview" class="w-full h-full object-contain select-none pointer-events-none opacity-80" />
-                            @else
-                                <div class="text-xs font-bold text-blue-800 text-center select-none pointer-events-none px-1">
-                                    Pilih Penandatangan<br>Terlebih Dahulu
-                                </div>
-                            @endif
-                            
-                        </div>
+                        <!-- Draggable Boxes -->
+                        @foreach($placements as $index => $placement)
+                            <div id="signatureBox-{{ $placement['id'] ?? $index }}" wire:key="box-{{ $placement['id'] ?? $index }}" data-index="{{ $index }}" data-page="{{ $placement['page'] }}" 
+                                 data-init-x="{{ $placement['x'] }}" data-init-y="{{ $placement['y'] }}" data-init-w="{{ $placement['width'] }}" data-init-h="{{ $placement['height'] }}"
+                                 class="signature-box absolute top-0 left-0 border-2 border-dashed border-blue-500 bg-blue-100 bg-opacity-50 flex flex-col items-center justify-center overflow-hidden" 
+                                 style="display: none; touch-action: none;">
+                                
+                                <div class="absolute top-0 left-0 bg-blue-500 text-white text-[10px] px-1 rounded-br opacity-70 select-none z-20">#{{ $index + 1 }}</div>
+                                
+                                @if(!empty($placement['include_stamp']))
+                                    @if(!empty($placement['stamp_url']))
+                                        <img src="{{ $placement['stamp_url'] }}" alt="Stamp Preview" class="w-full h-full object-contain select-none pointer-events-none opacity-90 z-10" />
+                                    @else
+                                        <!-- Placeholder fallback if no stamp uploaded -->
+                                        <div class="relative w-full h-full flex items-center justify-center">
+                                            <div class="absolute w-full h-full bg-red-100 opacity-40 border border-red-300 rounded-full flex items-center justify-center text-red-500 text-xs font-bold -rotate-12 z-0">STEMPEL</div>
+                                            @if(!empty($placement['signature_url']))
+                                                <img src="{{ $placement['signature_url'] }}" alt="Signature Preview" class="absolute w-3/4 h-3/4 object-contain select-none pointer-events-none opacity-90 z-10" />
+                                            @endif
+                                        </div>
+                                    @endif
+                                @elseif(!empty($placement['signature_url']))
+                                    <img src="{{ $placement['signature_url'] }}" alt="Signature Preview" class="w-full h-full object-contain select-none pointer-events-none opacity-90 z-10" />
+                                @else
+                                    <div class="text-[10px] font-bold text-blue-800 text-center select-none pointer-events-none px-1 z-10">
+                                        TTD #{{ $index + 1 }}
+                                    </div>
+                                @endif
+                                
+                            </div>
+                        @endforeach
                     </div>
                 </div>
 
                 <!-- Form Debug Inputs (Hidden but synced) -->
                 <div class="hidden">
-                    <input type="number" wire:model="previewPage" id="wire_previewPage">
-                    <input type="number" wire:model="previewX" id="wire_previewX" step="0.1">
-                    <input type="number" wire:model="previewY" id="wire_previewY" step="0.1">
-                    <input type="number" wire:model="previewWidth" id="wire_previewWidth" step="0.1">
-                    <input type="number" wire:model="previewHeight" id="wire_previewHeight" step="0.1">
+                    <input type="number" wire:model.live="previewPage" id="wire_previewPage">
                 </div>
             </div>
             
@@ -182,7 +217,7 @@
                     <button wire:click="closePreviewModal" class="px-4 py-2 bg-white border border-gray-300 text-gray-700 text-base font-medium rounded-md shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-300">
                         Batal
                     </button>
-                    <button wire:click="approveAndSign" wire:loading.attr="disabled" @if(!$selectedLecturerId) disabled @endif class="px-4 py-2 bg-green-600 text-white text-base font-medium rounded-md shadow-sm hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-400 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors">
+                    <button wire:click="approveAndSign" wire:loading.attr="disabled" class="px-4 py-2 bg-green-600 text-white text-base font-medium rounded-md shadow-sm hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-400 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors">
                         Setujui & Tanda Tangani
                     </button>
                 </div>
@@ -193,5 +228,33 @@
     
     @push('scripts')
     @vite(['resources/js/signature-editor.js'])
+    <script>
+        document.addEventListener('livewire:initialized', () => {
+            Livewire.hook('morph.updating', ({ el, toEl, skip, childrenOnly }) => {
+                if (el.classList && el.classList.contains('signature-box')) {
+                    // Preserve the inline styles (transform, width, height, etc) added by JS
+                    if (el.hasAttribute('style')) {
+                        toEl.setAttribute('style', el.getAttribute('style'));
+                    }
+                    if (el.hasAttribute('data-x')) {
+                        toEl.setAttribute('data-x', el.getAttribute('data-x'));
+                    }
+                    if (el.hasAttribute('data-y')) {
+                        toEl.setAttribute('data-y', el.getAttribute('data-y'));
+                    }
+                }
+            });
+
+            Livewire.hook('commit', ({ component, commit, respond, succeed, fail }) => {
+                succeed(({ snapshot, effect }) => {
+                    setTimeout(() => {
+                        if (typeof window.refreshSignatureBoxes === 'function') {
+                            window.refreshSignatureBoxes();
+                        }
+                    }, 50);
+                });
+            });
+        });
+    </script>
     @endpush
 </div>

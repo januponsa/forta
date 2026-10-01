@@ -35,6 +35,11 @@ class LetterTemplate extends Model
         'paper_size',
         'logo_asset_id',
         'lecturer_id',
+        'sig_x',
+        'sig_y',
+        'sig_page',
+        'sig_width',
+        'sig_height',
     ];
 
     public function logoAsset()

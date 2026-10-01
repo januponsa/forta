@@ -57,4 +57,14 @@ class Student extends Authenticatable
                      ->where('login_enabled', true)
                      ->where('approval_status', 'approved');
     }
+
+    public function submissions()
+    {
+        return $this->hasMany(Submission::class, 'nim', 'nim');
+    }
+
+    public function registrationRequest()
+    {
+        return $this->hasOne(StudentRegistrationRequest::class, 'student_id');
+    }
 }

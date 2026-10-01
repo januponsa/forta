@@ -148,12 +148,6 @@
             : Storage::disk('private')->path('letter-assets/logo.png'); // fallback
             
         $logoData = file_exists($logoPath) ? 'data:image/png;base64,' . base64_encode(file_get_contents($logoPath)) : '';
-
-        $signaturePath = $template->lecturer && $template->lecturer->signature_path
-            ? Storage::disk('public')->path($template->lecturer->signature_path)
-            : Storage::disk('private')->path('letter-assets/signature.png'); // fallback
-            
-        $signatureData = file_exists($signaturePath) ? 'data:image/png;base64,' . base64_encode(file_get_contents($signaturePath)) : '';
     @endphp
 
     <div class="container">
@@ -213,7 +207,7 @@
                     <tr>
                         <td>Semester</td>
                         <td>:</td>
-                        <td>{{ $request->student->semester ?? '-' }}</td>
+                        <td>{{ $request->semester ?? $request->student->semester ?? '-' }}</td>
                     </tr>
                 </table>
             </div>
@@ -227,11 +221,7 @@
             <div class="signature-content">
                 <div class="signature-date">Tangerang, {{ $date }}</div>
                 
-                @if($signatureData)
-                    <img src="{{ $signatureData }}" class="signature-image" alt="Signature">
-                @else
-                    <div style="height: 25mm; width: 40mm; border: 1px dashed #ccc; margin-top: 2mm; margin-bottom: 2mm; text-align: center; line-height: 25mm;">[Tanda Tangan]</div>
-                @endif
+                <div style="height: 25mm; width: 40mm; margin-top: 2mm; margin-bottom: 2mm;"></div>
                 
                 <div class="signature-name">{{ $template->lecturer ? $template->lecturer->name : ($template->signatory_name ?? '(Erick Dazki, S.Kom., M.Kom)') }}</div>
                 <div class="signature-position">{{ $template->lecturer ? $template->lecturer->position : ($template->signatory_position ?? 'Ketua Program Studi Informatika') }}</div>

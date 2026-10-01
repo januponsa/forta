@@ -44,6 +44,8 @@ Route::post('/admin/logout', [AdminAuthController::class, 'logout'])->name('admi
 // --- Admin Protected Routes ---
 Route::prefix('admin')->middleware(['admin'])->group(function () {
     Route::get('/dashboard', Dashboard::class)->name('admin.dashboard');
+    Route::get('/ai-dashboard', \App\Livewire\Admin\AiDashboard::class)->name('admin.ai-dashboard');
+    Route::get('/logbook', \App\Livewire\Admin\LogbookManager::class)->name('admin.logbook');
     Route::get('/pendaftaran-mahasiswa', \App\Livewire\Admin\StudentRegistrationManager::class)->name('admin.registrations');
     Route::get('/pendaftaran-mahasiswa/{registrationRequest}', [StudentRegistrationController::class, 'show'])->name('admin.registrations.show');
     Route::post('/pendaftaran-mahasiswa/{registrationRequest}/approve', [StudentRegistrationController::class, 'approve'])->name('admin.registrations.approve');
@@ -73,6 +75,7 @@ Route::prefix('admin')->middleware(['admin'])->group(function () {
         Route::get('/create', DocumentTemplateForm::class)->name('create');
         Route::get('/{id}/edit', DocumentTemplateForm::class)->name('edit');
         Route::post('/upload-image', [\App\Http\Controllers\Admin\EditorImageController::class, 'store'])->name('upload-image');
+        Route::get('/generate', \App\Livewire\Admin\GenericLetterGenerator::class)->name('generate');
     });
 
     // Internship Letters
@@ -114,6 +117,7 @@ Route::middleware(['student'])->group(function () {
     // Signature Requests
     Route::get('/signature-requests', \App\Livewire\Student\SignatureRequestList::class)->name('student.signature-requests.index');
     Route::get('/signature-requests/create', \App\Livewire\Student\SignatureRequestForm::class)->name('student.signature-requests.create');
+    Route::get('/signature-requests/{signatureRequest}/download', [\App\Http\Controllers\Student\SignatureRequestController::class, 'downloadFinal'])->name('student.signature-requests.download');
     Route::get('/signature-requests/{id}', \App\Livewire\Student\SignatureRequestForm::class)->name('student.signature-requests.show');
 });
 

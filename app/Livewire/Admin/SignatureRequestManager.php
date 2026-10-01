@@ -9,6 +9,7 @@ use Livewire\Attributes\Layout;
 use App\Services\PdfSignatureService;
 use App\Jobs\SendSignedDocumentEmail;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\DB;
 
 class SignatureRequestManager extends Component
 {
@@ -53,26 +54,72 @@ class SignatureRequestManager extends Component
     public $previewRequestId = null;
     public $previewRequestTitle = '';
     public $previewRequestOriginalPath = '';
-    public $previewX = 0;
-    public $previewY = 0;
     public $previewPage = 1;
-    public $previewWidth = 40;
-    public $previewHeight = 20;
-    public $selectedLecturerId = null;
+    public $placements = [];
     public $availableLecturers = [];
-    public $selectedLecturerSignatureUrl = null;
 
-    public function updatedSelectedLecturerId($value)
+    public function updatedPlacements($value, $key)
     {
-        if (!$value) {
-            $this->selectedLecturerSignatureUrl = null;
-            return;
+        if (str_ends_with($key, '.lecturer_id')) {
+            $index = explode('.', $key)[0];
+            if ($value) {
+                $lec = \App\Models\Lecturer::find($value);
+                if ($lec && $lec->signature_path) {
+                    $this->placements[$index]['signature_url'] = Storage::disk('public')->url($lec->signature_path);
+                } else {
+                    $this->placements[$index]['signature_url'] = null;
+                }
+                
+                if ($lec && $lec->stamp_path) {
+                    $this->placements[$index]['stamp_url'] = Storage::disk('public')->url($lec->stamp_path);
+                } else {
+                    $this->placements[$index]['stamp_url'] = null;
+                }
+            } else {
+                $this->placements[$index]['signature_url'] = null;
+                $this->placements[$index]['stamp_url'] = null;
+            }
         }
-        $lec = \App\Models\Lecturer::find($value);
-        if ($lec && $lec->signature_path) {
-            $this->selectedLecturerSignatureUrl = route('admin.file.download', ['path' => $lec->signature_path]);
-        } else {
-            $this->selectedLecturerSignatureUrl = null;
+    }
+
+    public function addPlacement()
+    {
+        // Hitung offset agar jika ditambah berulang tidak bertumpuk sempurna
+        $countOnPage = collect($this->placements)->where('page', $this->previewPage)->count();
+        $offset = $countOnPage * 10;
+        
+        $this->placements[] = [
+            'id' => uniqid(),
+            'lecturer_id' => null,
+            'page' => $this->previewPage,
+            'x' => 20 + $offset,
+            'y' => 20 + $offset,
+            'width' => 40,
+            'height' => 20,
+            'include_stamp' => false,
+            'signature_url' => null,
+            'stamp_url' => null,
+        ];
+    }
+
+    public function removePlacement($index)
+    {
+        unset($this->placements[$index]);
+        $this->placements = array_values($this->placements);
+        $this->dispatch('placement-removed');
+    }
+    
+    #[\Livewire\Attributes\On('update-placements')]
+    public function updatePlacementsData($placementsData)
+    {
+        foreach ($placementsData as $data) {
+            $index = $data['index'];
+            if (isset($this->placements[$index])) {
+                $this->placements[$index]['x'] = $data['x'];
+                $this->placements[$index]['y'] = $data['y'];
+                $this->placements[$index]['width'] = $data['width'];
+                $this->placements[$index]['height'] = $data['height'];
+            }
         }
     }
 
@@ -82,19 +129,29 @@ class SignatureRequestManager extends Component
         $this->previewRequestId = $request->id;
         $this->previewRequestTitle = $request->title;
         $this->previewRequestOriginalPath = $request->original_file_path;
-        $this->previewX = $request->x_pos;
-        $this->previewY = $request->y_pos;
-        $this->previewPage = $request->page_number;
-        $this->previewWidth = $request->width;
-        $this->previewHeight = $request->height;
-        $this->selectedLecturerId = $request->lecturer_id;
+        $this->previewPage = $request->page_number ?: 1;
         
-        $this->updatedSelectedLecturerId($this->selectedLecturerId);
+        $this->placements = [];
+        $this->placements[] = [
+            'id' => uniqid(),
+            'lecturer_id' => $request->lecturer_id,
+            'page' => $this->previewPage,
+            'x' => $request->x_pos ?: 20,
+            'y' => $request->y_pos ?: 20,
+            'width' => $request->width ?: 40,
+            'height' => $request->height ?: 20,
+            'include_stamp' => false,
+            'signature_url' => null,
+            'stamp_url' => null,
+        ];
+        
+        if ($request->lecturer_id) {
+            $this->updatedPlacements($request->lecturer_id, '0.lecturer_id');
+        }
         
         // Ambil data dosen yang memiliki jabatan struktural & diizinkan untuk role admin saat ini
         $adminRole = auth()->user()->role;
         $this->availableLecturers = \App\Models\Lecturer::where('is_active', true)
-            ->whereNotNull('position')
             ->get()
             ->filter(function ($lec) use ($adminRole) {
                 $roles = (array) $lec->allowed_roles;
@@ -104,20 +161,15 @@ class SignatureRequestManager extends Component
         $this->dispatch('open-signature-editor', [
             'requestId' => $this->previewRequestId,
             'previewUrl' => route('admin.file.download', ['path' => $this->previewRequestOriginalPath]),
-            'page' => $this->previewPage ?: 1,
-            'x' => $this->previewX,
-            'y' => $this->previewY,
-            'width' => $this->previewWidth,
-            'height' => $this->previewHeight,
+            'page' => $this->previewPage,
         ]);
     }
 
     public function closePreviewModal()
     {
         $this->previewRequestId = null;
+        $this->placements = [];
         $this->dispatch('preview-modal-closed');
-        $this->selectedLecturerId = null;
-        $this->selectedLecturerSignatureUrl = null;
     }
 
     public function approveAndSign(PdfSignatureService $pdfService)
@@ -128,38 +180,51 @@ class SignatureRequestManager extends Component
 
         $request = SignatureRequest::findOrFail($this->previewRequestId);
         
-        if (!$this->selectedLecturerId) {
-            session()->flash('error', 'Silakan pilih penandatangan terlebih dahulu.');
+        if (empty($this->placements)) {
+            session()->flash('error', 'Tidak ada tanda tangan yang ditempatkan.');
             return;
         }
 
-        // Verifikasi otoritas
         $adminRole = auth()->user()->role;
-        $lecturer = \App\Models\Lecturer::findOrFail($this->selectedLecturerId);
-        $roles = (array) $lecturer->allowed_roles;
-        
-        if (!empty($roles) && !in_array($adminRole, $roles)) {
-            session()->flash('error', 'Anda tidak berwenang menggunakan tanda tangan pejabat tersebut.');
-            return;
-        }
 
-        if ($this->previewWidth <= 0 || $this->previewHeight <= 0) {
-            session()->flash('error', 'Ukuran area tanda tangan tidak valid.');
-            return;
+        foreach ($this->placements as $p) {
+            if (empty($p['lecturer_id'])) {
+                session()->flash('error', 'Semua kotak tanda tangan harus dipilih penandatangannya.');
+                return;
+            }
+            if ($p['width'] <= 0 || $p['height'] <= 0) {
+                session()->flash('error', 'Ukuran area tanda tangan tidak valid.');
+                return;
+            }
+
+            $lecturer = \App\Models\Lecturer::findOrFail($p['lecturer_id']);
+            $roles = (array) $lecturer->allowed_roles;
+            if (!empty($roles) && !in_array($adminRole, $roles)) {
+                session()->flash('error', 'Anda tidak berwenang menggunakan tanda tangan ' . $lecturer->name);
+                return;
+            }
         }
         
         try {
-            DB::transaction(function () use ($request, $pdfService, $lecturer) {
-                // Update request with new positions from admin
+            DB::transaction(function () use ($request, $pdfService) {
+                $request->placements()->delete();
+                
+                foreach ($this->placements as $p) {
+                    $request->placements()->create([
+                        'lecturer_id' => $p['lecturer_id'],
+                        'page_number' => $p['page'],
+                        'x_pos' => $p['x'],
+                        'y_pos' => $p['y'],
+                        'width' => $p['width'],
+                        'height' => $p['height'],
+                        'include_stamp' => $p['include_stamp'],
+                    ]);
+                }
+
                 $request->update([
                     'status' => 'signing', 
                     'approver_id' => auth()->id(),
-                    'lecturer_id' => $this->selectedLecturerId,
-                    'x_pos' => $this->previewX,
-                    'y_pos' => $this->previewY,
-                    'page_number' => $this->previewPage,
-                    'width' => $this->previewWidth,
-                    'height' => $this->previewHeight,
+                    'lecturer_id' => $this->placements[0]['lecturer_id'],
                 ]);
 
                 // Call the service to perform signing
@@ -195,5 +260,18 @@ class SignatureRequestManager extends Component
             'rejection_reason' => 'Ditolak oleh admin.'
         ]);
         session()->flash('message', 'Pengajuan ditolak.');
+    }
+
+    public function delete($id)
+    {
+        $request = SignatureRequest::findOrFail($id);
+        if ($request->original_file_path) {
+            Storage::disk('private')->delete($request->original_file_path);
+        }
+        if ($request->signed_file_path) {
+            Storage::disk('private')->delete($request->signed_file_path);
+        }
+        $request->delete();
+        session()->flash('message', 'Pengajuan berhasil dihapus.');
     }
 }

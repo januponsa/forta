@@ -31,17 +31,26 @@
                     <td class="py-2 px-4">{{ $request->signatory->name ?? '-' }}</td>
                     <td class="py-2 px-4">
                         @if($request->status == 'completed')
-                            <span class="px-2 py-1 bg-green-200 text-green-800 rounded-full text-xs">Selesai</span>
+                            <span class="px-2 py-1 bg-green-200 text-green-800 rounded-full text-xs font-semibold">Selesai & Email Terkirim</span>
                         @elseif($request->status == 'rejected')
                             <span class="px-2 py-1 bg-red-200 text-red-800 rounded-full text-xs">Ditolak</span>
+                        @elseif($request->status == 'approved' || $request->status == 'signed')
+                            <span class="px-2 py-1 bg-blue-200 text-blue-800 rounded-full text-xs font-semibold">Sudah Ditandatangani</span>
+                        @elseif($request->status == 'email_failed')
+                            <span class="px-2 py-1 bg-yellow-200 text-yellow-800 rounded-full text-xs">Kendala Teknis (Email)</span>
                         @else
                             <span class="px-2 py-1 bg-yellow-200 text-yellow-800 rounded-full text-xs">{{ ucfirst(str_replace('_', ' ', $request->status)) }}</span>
                         @endif
                     </td>
                     <td class="py-2 px-4 text-center">
-                        <a href="{{ route('student.signature-requests.show', $request->id) }}" class="text-blue-500 hover:text-blue-700">Detail</a>
+                        @if(in_array($request->status, ['draft', 'revision_required']))
+                            <a href="{{ route('student.signature-requests.show', $request->id) }}" class="text-blue-500 hover:text-blue-700">Edit</a>
+                        @else
+                            <span class="text-gray-400 text-xs italic">Terkunci</span>
+                        @endif
+                        
                         @if($request->status == 'completed' && $request->signed_file_path)
-                            | <a href="{{ Storage::disk('private')->url($request->signed_file_path) }}" target="_blank" class="text-green-600 hover:text-green-800">Unduh Final</a>
+                            | <a href="{{ route('student.signature-requests.download', $request->id) }}" target="_blank" class="text-green-600 hover:text-green-800 font-bold">Unduh Final</a>
                         @endif
                     </td>
                 </tr>

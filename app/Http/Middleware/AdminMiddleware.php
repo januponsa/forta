@@ -21,7 +21,7 @@ class AdminMiddleware
         }
 
         $user = Auth::guard('web')->user();
-        if ($user->role !== 'superadmin' || !$user->is_active) {
+        if (!in_array($user->role, ['superadmin', 'admin_forta']) || !$user->is_active) {
             Auth::guard('web')->logout();
             return redirect()->route('admin.login')->with('error', 'Akses ditolak.');
         }

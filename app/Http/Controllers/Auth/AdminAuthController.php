@@ -63,7 +63,7 @@ class AdminAuthController extends Controller
             return redirect()->route('admin.login')->with('error', 'Akun Anda dinonaktifkan. Silakan hubungi administrator.');
         }
 
-        if ($user->role !== 'superadmin') {
+        if (!in_array($user->role, ['superadmin', 'admin_forta'])) {
             $this->logAuth('admin', $user->id, $normalizedEmail, 'oauth_rejected', 'Role tidak valid.');
             return redirect()->route('admin.login')->with('error', 'Anda tidak memiliki hak akses sebagai pengelola.');
         }
@@ -111,7 +111,7 @@ class AdminAuthController extends Controller
                 return back()->with('error', 'Akun Anda dinonaktifkan.');
             }
 
-            if ($user->role !== 'superadmin') {
+            if (!in_array($user->role, ['superadmin', 'admin_forta'])) {
                 Auth::guard('web')->logout();
                 $this->logAuth('admin', $user->id, $username, 'login_failed', 'Role tidak valid via credential.');
                 return back()->with('error', 'Anda tidak memiliki hak akses pengelola.');

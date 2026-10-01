@@ -9,7 +9,7 @@
 </head>
 <body class="bg-gray-50 font-sans leading-normal tracking-normal flex flex-col min-h-screen">
     <!-- Header -->
-    <header class="bg-blue-600 shadow-sm h-16 flex items-center justify-between px-6 z-10 text-white">
+    <header class="bg-blue-600 shadow-sm h-16 flex items-center justify-between px-6 z-50 relative text-white">
         <div class="flex items-center space-x-6">
             <h1 class="text-xl font-bold"><a href="{{ route('student.dashboard') }}">FORTA Student</a></h1>
             <nav class="hidden md:flex space-x-4">

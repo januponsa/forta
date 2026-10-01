@@ -18,8 +18,10 @@ class InternshipLetterRequest extends Model
         'company_city',
         'placement_location',
         'internship_position',
+        'semester',
         'start_date',
         'end_date',
+        'letter_date',
         'duration_notes',
         'purpose',
         'additional_notes',
@@ -37,6 +39,7 @@ class InternshipLetterRequest extends Model
     protected $casts = [
         'start_date' => 'date',
         'end_date' => 'date',
+        'letter_date' => 'date',
         'generated_at' => 'datetime',
         'approved_at' => 'datetime',
     ];

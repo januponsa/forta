@@ -39,18 +39,14 @@ document.addEventListener('open-signature-editor', async (event) => {
     
     // Reset state
     pdfError.classList.add('hidden');
-    initialSetupDone = false;
     zoomFactor = 1.0;
     updateZoomUI();
     
     // Apply saved coordinates if any
     if (detail.page) {
-        document.getElementById('wire_previewPage').value = detail.page;
+        let wp = document.getElementById('wire_previewPage');
+        if(wp) wp.value = detail.page;
     }
-    if (detail.x) document.getElementById('wire_previewX').value = detail.x;
-    if (detail.y) document.getElementById('wire_previewY').value = detail.y;
-    if (detail.width) document.getElementById('wire_previewWidth').value = detail.width;
-    if (detail.height) document.getElementById('wire_previewHeight').value = detail.height;
     
     try {
         const loadingTask = pdfjsLib.getDocument({
@@ -66,6 +62,8 @@ document.addEventListener('open-signature-editor', async (event) => {
         
         pageNum = targetPage;
         renderPage(pageNum);
+        
+        setupInteractJs();
     } catch (err) {
         console.error("Error loading PDF: ", err);
         pdfError.classList.remove('hidden');
@@ -73,10 +71,67 @@ document.addEventListener('open-signature-editor', async (event) => {
     }
 });
 
+function setupInteractJs() {
+    if (initialSetupDone) return;
+    
+    interact('.signature-box').draggable({
+        modifiers: [
+            interact.modifiers.restrictRect({
+                restriction: '#pdfStage',
+                endOnly: false
+            })
+        ],
+        listeners: {
+            move: function(event) {
+                let target = event.target;
+                let x = (parseFloat(target.getAttribute('data-x')) || 0) + event.dx;
+                let y = (parseFloat(target.getAttribute('data-y')) || 0) + event.dy;
+
+                target.style.transform = `translate(${x}px, ${y}px)`;
+
+                target.setAttribute('data-x', x);
+                target.setAttribute('data-y', y);
+            },
+            end: updateLivewireData
+        }
+    }).resizable({
+        edges: { left: true, right: true, top: true, bottom: true },
+        modifiers: [
+            interact.modifiers.restrictSize({
+                min: { width: 50, height: 25 }
+            }),
+            interact.modifiers.restrictRect({
+                restriction: '#pdfStage',
+                endOnly: true
+            })
+        ],
+        listeners: {
+            move: function (event) {
+                let target = event.target;
+                let x = (parseFloat(target.getAttribute('data-x')) || 0);
+                let y = (parseFloat(target.getAttribute('data-y')) || 0);
+
+                target.style.width = event.rect.width + 'px';
+                target.style.height = event.rect.height + 'px';
+
+                x += event.deltaRect.left;
+                y += event.deltaRect.top;
+
+                target.style.transform = `translate(${x}px, ${y}px)`;
+
+                target.setAttribute('data-x', x);
+                target.setAttribute('data-y', y);
+            },
+            end: updateLivewireData
+        }
+    });
+
+    initialSetupDone = true;
+}
+
 function initializeEditorElements() {
     canvas = document.getElementById('pdfCanvas');
     if(canvas) ctx = canvas.getContext('2d');
-    signatureBox = document.getElementById('signatureBox');
     pdfContainerWrapper = document.getElementById('pdfContainerWrapper');
     pdfStage = document.getElementById('pdfStage');
     pdfError = document.getElementById('pdfError');
@@ -96,42 +151,54 @@ function handleGlobalClicks(e) {
 }
 
 function updateLivewireData() {
-    if(!signatureBox) return;
+    let boxes = document.querySelectorAll('.signature-box');
+    if (boxes.length === 0) return;
     
     let w_page = document.getElementById('wire_previewPage');
-    let w_x = document.getElementById('wire_previewX');
-    let w_y = document.getElementById('wire_previewY');
-    let w_w = document.getElementById('wire_previewWidth');
-    let w_h = document.getElementById('wire_previewHeight');
-
-    if(!w_page) return;
+    if (w_page && w_page.value != pageNum) {
+        w_page.value = pageNum;
+        w_page.dispatchEvent(new Event('input', { bubbles: true }));
+    }
     
-    let cssX = parseFloat(signatureBox.getAttribute('data-x')) || 0;
-    let cssY = parseFloat(signatureBox.getAttribute('data-y')) || 0;
-    let cssW = parseFloat(signatureBox.style.width) || 150;
-    let cssH = parseFloat(signatureBox.style.height) || 75;
+    let placementsData = [];
     
-    let ptX = (cssX / scale);
-    let ptY = (cssY / scale);
-    let ptW = (cssW / scale);
-    let ptH = (cssH / scale);
+    boxes.forEach(box => {
+        let boxPage = parseInt(box.getAttribute('data-page'));
+        if (boxPage !== pageNum) return;
+        
+        let index = box.getAttribute('data-index');
+        
+        let cssX = parseFloat(box.getAttribute('data-x'));
+        let cssY = parseFloat(box.getAttribute('data-y'));
+        
+        // If data-x or data-y is missing, do not overwrite with 0 (it means it hasn't been rendered yet)
+        if (isNaN(cssX) || isNaN(cssY)) return;
+        
+        let cssW = parseFloat(box.style.width) || 150;
+        let cssH = parseFloat(box.style.height) || 75;
+        
+        let ptX = (cssX / scale);
+        let ptY = (cssY / scale);
+        let ptW = (cssW / scale);
+        let ptH = (cssH / scale);
+        
+        let mmX = (ptX * 25.4 / 72).toFixed(2);
+        let mmY = (ptY * 25.4 / 72).toFixed(2);
+        let mmW = (ptW * 25.4 / 72).toFixed(2);
+        let mmH = (ptH * 25.4 / 72).toFixed(2);
+        
+        placementsData.push({
+            index: index,
+            x: mmX,
+            y: mmY,
+            width: mmW,
+            height: mmH
+        });
+    });
     
-    let mmX = (ptX * 25.4 / 72).toFixed(2);
-    let mmY = (ptY * 25.4 / 72).toFixed(2);
-    let mmW = (ptW * 25.4 / 72).toFixed(2);
-    let mmH = (ptH * 25.4 / 72).toFixed(2);
-    
-    w_page.value = pageNum;
-    w_x.value = mmX;
-    w_y.value = mmY;
-    w_w.value = mmW;
-    w_h.value = mmH;
-    
-    w_page.dispatchEvent(new Event('input', { bubbles: true }));
-    w_x.dispatchEvent(new Event('input', { bubbles: true }));
-    w_y.dispatchEvent(new Event('input', { bubbles: true }));
-    w_w.dispatchEvent(new Event('input', { bubbles: true }));
-    w_h.dispatchEvent(new Event('input', { bubbles: true }));
+    if (window.Livewire && placementsData.length > 0) {
+        window.Livewire.dispatch('update-placements', [placementsData]);
+    }
 }
 
 function calculateScaleToFit(viewport) {
@@ -177,42 +244,7 @@ function renderPage(num) {
                 pageNumPending = null;
             }
             
-            if(signatureBox) {
-                signatureBox.style.display = 'flex';
-                
-                let w_x = document.getElementById('wire_previewX');
-                let w_y = document.getElementById('wire_previewY');
-                let w_w = document.getElementById('wire_previewWidth');
-                let w_h = document.getElementById('wire_previewHeight');
-                
-                if (w_x && w_x.value > 0) {
-                    let ptX = (parseFloat(w_x.value) * 72 / 25.4);
-                    let ptY = (parseFloat(w_y.value) * 72 / 25.4);
-                    let ptW = (parseFloat(w_w.value) * 72 / 25.4);
-                    let ptH = (parseFloat(w_h.value) * 72 / 25.4);
-                    
-                    let pxX = ptX * scale;
-                    let pxY = ptY * scale;
-                    let pxW = ptW * scale;
-                    let pxH = ptH * scale;
-                    
-                    signatureBox.style.width = pxW + 'px';
-                    signatureBox.style.height = pxH + 'px';
-                    
-                    signatureBox.style.transform = `translate(${pxX}px, ${pxY}px)`;
-                    signatureBox.setAttribute('data-x', pxX);
-                    signatureBox.setAttribute('data-y', pxY);
-                } else {
-                    let defaultX = 20;
-                    let defaultY = 20;
-                    signatureBox.style.transform = `translate(${defaultX}px, ${defaultY}px)`;
-                    signatureBox.setAttribute('data-x', defaultX);
-                    signatureBox.setAttribute('data-y', defaultY);
-                    updateLivewireData();
-                }
-                
-                setupInteractJs();
-            }
+            window.refreshSignatureBoxes();
         });
     });
 
@@ -225,6 +257,40 @@ function renderPage(num) {
     if (nextBtn) nextBtn.disabled = num >= pdfDoc.numPages;
 }
 
+window.refreshSignatureBoxes = function() {
+    let boxes = document.querySelectorAll('.signature-box');
+    boxes.forEach(box => {
+        let boxPage = parseInt(box.getAttribute('data-page'));
+        
+        if (boxPage === pageNum) {
+            box.style.display = 'flex';
+            
+            let initX = parseFloat(box.getAttribute('data-init-x')) || 20;
+            let initY = parseFloat(box.getAttribute('data-init-y')) || 20;
+            let initW = parseFloat(box.getAttribute('data-init-w')) || 40;
+            let initH = parseFloat(box.getAttribute('data-init-h')) || 20;
+            
+            let ptX = (initX * 72 / 25.4);
+            let ptY = (initY * 72 / 25.4);
+            let ptW = (initW * 72 / 25.4);
+            let ptH = (initH * 72 / 25.4);
+            
+            let pxX = ptX * scale;
+            let pxY = ptY * scale;
+            let pxW = ptW * scale;
+            let pxH = ptH * scale;
+            
+            box.style.width = pxW + 'px';
+            box.style.height = pxH + 'px';
+            box.style.transform = `translate(${pxX}px, ${pxY}px)`;
+            box.setAttribute('data-x', pxX);
+            box.setAttribute('data-y', pxY);
+        } else {
+            box.style.display = 'none';
+        }
+    });
+};
+
 function queueRenderPage(num) {
     if (pageRendering) {
         pageNumPending = num;
@@ -235,16 +301,30 @@ function queueRenderPage(num) {
 
 function onPrevPage() {
     if (pageNum <= 1 || !pdfDoc) return;
-    pageNum--;
-    queueRenderPage(pageNum);
     updateLivewireData();
+    pageNum--;
+    
+    let w_page = document.getElementById('wire_previewPage');
+    if (w_page) {
+        w_page.value = pageNum;
+        w_page.dispatchEvent(new Event('input', { bubbles: true }));
+    }
+    
+    queueRenderPage(pageNum);
 }
 
 function onNextPage() {
     if (!pdfDoc || pageNum >= pdfDoc.numPages) return;
-    pageNum++;
-    queueRenderPage(pageNum);
     updateLivewireData();
+    pageNum++;
+    
+    let w_page = document.getElementById('wire_previewPage');
+    if (w_page) {
+        w_page.value = pageNum;
+        w_page.dispatchEvent(new Event('input', { bubbles: true }));
+    }
+    
+    queueRenderPage(pageNum);
 }
 
 function updateZoomUI() {
@@ -272,71 +352,9 @@ function onFitWidth() {
     queueRenderPage(pageNum);
 }
 
-function setupInteractJs() {
-    if(initialSetupDone) return;
-    
-    interact('#signatureBox')
-        .draggable({
-            modifiers: [
-                interact.modifiers.restrictRect({
-                    restriction: 'parent',
-                    endOnly: false
-                })
-            ],
-            listeners: {
-                move(event) {
-                    var target = event.target;
-                    var x = (parseFloat(target.getAttribute('data-x')) || 0) + event.dx;
-                    var y = (parseFloat(target.getAttribute('data-y')) || 0) + event.dy;
 
-                    target.style.transform = `translate(${x}px, ${y}px)`;
-                    target.setAttribute('data-x', x);
-                    target.setAttribute('data-y', y);
-                },
-                end(event) {
-                    updateLivewireData();
-                }
-            }
-        })
-        .resizable({
-            edges: { left: true, right: true, bottom: true, top: true },
-            modifiers: [
-                interact.modifiers.restrictEdges({
-                    outer: 'parent'
-                }),
-                interact.modifiers.restrictSize({
-                    min: { width: 50, height: 25 }
-                })
-            ],
-            listeners: {
-                move: function (event) {
-                    let { x, y } = event.target.dataset;
-
-                    x = (parseFloat(x) || 0) + event.deltaRect.left;
-                    y = (parseFloat(y) || 0) + event.deltaRect.top;
-
-                    Object.assign(event.target.style, {
-                        width: `${event.rect.width}px`,
-                        height: `${event.rect.height}px`,
-                        transform: `translate(${x}px, ${y}px)`
-                    });
-
-                    Object.assign(event.target.dataset, { x, y });
-                },
-                end(event) {
-                    updateLivewireData();
-                }
-            }
-        });
-        
-    initialSetupDone = true;
-}
 
 // Reset state when modal is closed
 window.addEventListener('preview-modal-closed', () => {
     currentRequestId = null;
-    if (initialSetupDone) {
-        interact('#signatureBox').unset();
-        initialSetupDone = false;
-    }
 });

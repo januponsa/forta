@@ -32,6 +32,8 @@ class TemplateSettings extends Component
     public $logo_asset_id;
     public $lecturer_id;
     
+    public $sig_x, $sig_y, $sig_page, $sig_width, $sig_height;
+    
     public $availableLogos = [];
     public $availableLecturers = [];
 
@@ -54,6 +56,11 @@ class TemplateSettings extends Component
         'margin_right' => 'required|numeric',
         'logo_asset_id' => 'nullable|exists:document_assets,id',
         'lecturer_id' => 'nullable|exists:lecturers,id',
+        'sig_x' => 'nullable|numeric',
+        'sig_y' => 'nullable|numeric',
+        'sig_page' => 'nullable|numeric',
+        'sig_width' => 'nullable|numeric',
+        'sig_height' => 'nullable|numeric',
     ];
 
     public function mount()
@@ -102,6 +109,12 @@ class TemplateSettings extends Component
 
         $this->logo_asset_id = $this->template->logo_asset_id;
         $this->lecturer_id = $this->template->lecturer_id;
+        
+        $this->sig_x = $this->template->sig_x;
+        $this->sig_y = $this->template->sig_y;
+        $this->sig_page = $this->template->sig_page;
+        $this->sig_width = $this->template->sig_width;
+        $this->sig_height = $this->template->sig_height;
 
         $this->availableLogos = DocumentAsset::whereIn('asset_type', ['logo', 'image'])->get();
         $this->availableLecturers = Lecturer::where('is_active', true)->whereNotNull('position')->get();
@@ -130,6 +143,11 @@ class TemplateSettings extends Component
             'margin_right' => $this->margin_right,
             'logo_asset_id' => $this->logo_asset_id,
             'lecturer_id' => $this->lecturer_id,
+            'sig_x' => $this->sig_x,
+            'sig_y' => $this->sig_y,
+            'sig_page' => $this->sig_page ?: 1,
+            'sig_width' => $this->sig_width ?: 150,
+            'sig_height' => $this->sig_height ?: 75,
         ]);
 
         session()->flash('message', 'Template surat berhasil diperbarui.');

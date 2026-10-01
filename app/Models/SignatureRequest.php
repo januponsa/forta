@@ -22,4 +22,5 @@ class SignatureRequest extends Model
     public function reviewer() { return $this->belongsTo(User::class, 'reviewer_id'); }
     public function approver() { return $this->belongsTo(User::class, 'approver_id'); }
     public function histories() { return $this->hasMany(SignatureRequestHistory::class); }
+    public function placements() { return $this->hasMany(SignaturePlacement::class); }
 }
