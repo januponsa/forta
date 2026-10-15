@@ -18,14 +18,24 @@ class AiDashboard extends Component
         $this->atRiskStudents = $aiService->getAtRiskStudents();
     }
 
-    public function sendAiReminder(AiAnalyticsService $aiService, $studentId, $reasons)
+    public function sendAiReminder(AiAnalyticsService $aiService, $studentId, $reasons = [])
     {
         $student = Student::find($studentId);
         if ($student) {
-            $result = $aiService->generateAndSendReminder($student, $reasons);
+            if (empty($reasons)) {
+                $atRiskList = $aiService->getAtRiskStudents();
+                foreach ($atRiskList as $item) {
+                    if ($item['student']->id == $studentId) {
+                        $reasons = $item['reasons'];
+                        break;
+                    }
+                }
+            }
+
+            $result = $aiService->generateAndSendReminder($student, $reasons ?: ['Terdapat dokumen pengajuan yang memerlukan tindak lanjut segera.']);
             if ($result['status'] === 'success') {
                 $this->aiResponse = $result['email_body'];
-                session()->flash('message', 'AI Reminder berhasil dikirim.');
+                session()->flash('message', $result['message']);
             } else {
                 session()->flash('error', $result['message']);
             }
@@ -34,6 +44,10 @@ class AiDashboard extends Component
 
     public function render()
     {
-        return view('livewire.admin.ai-dashboard')->layout('layouts.admin');
+        return view('livewire.admin.ai-dashboard', [
+            'analyticsData' => $this->analyticsData,
+            'atRiskStudents' => $this->atRiskStudents,
+            'aiResponse' => $this->aiResponse,
+        ])->layout('layouts.admin');
     }
 }

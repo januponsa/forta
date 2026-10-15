@@ -116,5 +116,8 @@ class DatabaseSeeder extends Seeder
         // 5. Penerima Reminder
         ReminderRecipient::create(['name' => 'Kaprodi', 'email' => 'kaprodi@pradita.ac.id', 'role' => 'kaprodi']);
         ReminderRecipient::create(['name' => 'Sekprodi', 'email' => 'sekprodi@pradita.ac.id', 'role' => 'sekprodi']);
+
+        // 6. Data Dummy AI Dashboard & Analytics
+        $this->call(AiDashboardDummySeeder::class);
     }
 }
