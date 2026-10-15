@@ -10,12 +10,14 @@ class AiDashboard extends Component
 {
     public $analyticsData = [];
     public $atRiskStudents = [];
+    public $predictiveInsights = [];
     public $aiResponse = null;
 
     public function mount(AiAnalyticsService $aiService)
     {
         $this->analyticsData = $aiService->getFormAnalytics();
         $this->atRiskStudents = $aiService->getAtRiskStudents();
+        $this->predictiveInsights = $aiService->getPredictiveInsights();
     }
 
     public function sendAiReminder(AiAnalyticsService $aiService, $studentId, $reasons = [])
@@ -47,6 +49,7 @@ class AiDashboard extends Component
         return view('livewire.admin.ai-dashboard', [
             'analyticsData' => $this->analyticsData,
             'atRiskStudents' => $this->atRiskStudents,
+            'predictiveInsights' => $this->predictiveInsights,
             'aiResponse' => $this->aiResponse,
         ])->layout('layouts.admin');
     }
