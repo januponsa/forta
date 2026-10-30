@@ -60,10 +60,10 @@
                     @csrf
                     <div>
                         <label for="username" class="block text-sm font-medium text-slate-700">
-                            Username / Email / NIP
+                            Username / Email / NIM / NIP
                         </label>
                         <div class="mt-1">
-                            <input id="username" name="username" type="text" autocomplete="username" required value="{{ old('username') }}" placeholder="Masukkan username, email, atau NIP Dosen" class="appearance-none block w-full px-3 py-2.5 border border-slate-300 rounded-lg shadow-sm placeholder-slate-400 focus:outline-none focus:ring-teal-500 focus:border-teal-500 sm:text-sm">
+                            <input id="username" name="username" type="text" autocomplete="username" required value="{{ old('username') }}" placeholder="Masukkan Username, Email, NIM Mahasiswa, atau NIP Dosen" class="appearance-none block w-full px-3 py-2.5 border border-slate-300 rounded-lg shadow-sm placeholder-slate-400 focus:outline-none focus:ring-teal-500 focus:border-teal-500 sm:text-sm">
                         </div>
                         @error('username') <span class="text-xs text-red-500 mt-1 block">{{ $message }}</span> @enderror
                     </div>
@@ -96,8 +96,8 @@
 
             <div class="mt-6 pt-5 border-t border-slate-100 bg-slate-50/70 -mx-4 px-4 sm:-mx-10 sm:px-10 pb-2 rounded-b-xl">
                 <div class="text-xs text-slate-500 space-y-1.5">
-                    <p><span class="font-semibold text-slate-700">Mahasiswa:</span> Klik tombol Google menggunakan email <span class="font-mono text-teal-700">@student.pradita.ac.id</span>.</p>
-                    <p><span class="font-semibold text-slate-700">Dosen &amp; Pengelola:</span> Gunakan tombol Google (<span class="font-mono text-teal-700">@pradita.ac.id</span>) atau form Username / NIP &amp; Password di atas.</p>
+                    <p><span class="font-semibold text-slate-700">Mahasiswa:</span> Masuk menggunakan <strong>NIM / Username / Email &amp; Password</strong> atau tombol Google (<span class="font-mono text-teal-700">@student.pradita.ac.id</span>).</p>
+                    <p><span class="font-semibold text-slate-700">Dosen &amp; Pengelola:</span> Masuk menggunakan <strong>Username / NIP / Email &amp; Password</strong> atau tombol Google (<span class="font-mono text-teal-700">@pradita.ac.id</span>).</p>
                 </div>
             </div>
             

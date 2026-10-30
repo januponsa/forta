@@ -14,8 +14,10 @@ class Student extends Authenticatable
     protected $fillable = [
         'nim',
         'name',
+        'username',
         'email',
         'normalized_email',
+        'password',
         'angkatan',
         'google_id',
         'avatar',
@@ -35,6 +37,7 @@ class Student extends Authenticatable
     ];
 
     protected $hidden = [
+        'password',
         'remember_token',
     ];
 

@@ -63,4 +63,30 @@ class LoginTest extends TestCase
         $this->get('/admin/dashboard')
             ->assertRedirect(route('lecturer.defenses.internship.my-defenses'));
     }
+
+    public function test_student_can_login_by_nim_username_or_email_and_redirects_to_student_dashboard(): void
+    {
+        $student = \App\Models\Student::create([
+            'nim' => '2310101001',
+            'name' => 'Mahasiswa Uji',
+            'username' => 'mahasiswa.uji',
+            'email' => 'mahasiswa.uji@student.pradita.ac.id',
+            'normalized_email' => 'mahasiswa.uji@student.pradita.ac.id',
+            'password' => Hash::make('mhs12345'),
+            'angkatan' => '2023',
+            'academic_status' => 'active',
+            'status_akademik' => 'Aktif',
+            'login_enabled' => true,
+            'status_akun' => 'Login Diizinkan',
+            'approval_status' => 'approved',
+        ]);
+
+        $response = $this->post('/login', [
+            'username' => 'mahasiswa.uji',
+            'password' => 'mhs12345',
+        ]);
+
+        $response->assertRedirect('/dashboard');
+        $this->assertAuthenticatedAs($student, 'student');
+    }
 }

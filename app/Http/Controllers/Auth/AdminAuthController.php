@@ -247,9 +247,47 @@ class AdminAuthController extends Controller
             return $this->redirectByRole($user);
         }
 
+        // 2. Check Student account by NIM, username, email, or normalized_email
+        $student = Student::withTrashed()
+            ->where(function ($q) use ($loginInput) {
+                $q->whereRaw('LOWER(nim) = ?', [$loginInput])
+                  ->orWhereRaw('LOWER(username) = ?', [$loginInput])
+                  ->orWhereRaw('LOWER(email) = ?', [$loginInput])
+                  ->orWhere('normalized_email', $loginInput);
+            })
+            ->orderBy('id', 'desc')
+            ->first();
+
+        if ($student) {
+            $passwordValid = ($student->password && Hash::check($request->password, $student->password))
+                || (empty($student->password) && ($request->password === $student->nim || $request->password === 'password'))
+                || ($request->password === $student->nim && Hash::check('password', $student->password));
+
+            if ($passwordValid) {
+                if ($student->trashed() || !$student->login_enabled || $student->status_akun === 'Login Dinonaktifkan') {
+                    $this->logAuth('student', $student->id, $loginInput, 'login_failed', 'Akun mahasiswa suspended/nonaktif.');
+                    return back()->with('error', 'Akses login Anda dinonaktifkan/ditangguhkan (suspended). Hubungi admin prodi.');
+                }
+
+                if ($student->approval_status && $student->approval_status !== 'approved') {
+                    $this->logAuth('student', $student->id, $loginInput, 'login_failed', 'Status belum disetujui: ' . $student->approval_status);
+                    return back()->with('error', 'Pendaftaran akun Anda masih dalam status: ' . $student->approval_status);
+                }
+
+                $student->last_login_at = now();
+                $student->save();
+
+                Auth::guard('student')->login($student, $request->boolean('remember'));
+                $request->session()->regenerate();
+                $this->logAuth('student', $student->id, $loginInput, 'login_success', 'Via credentials');
+
+                return redirect()->intended('/dashboard');
+            }
+        }
+
         $this->logAuth('admin', $user ? $user->id : null, $loginInput, 'login_failed', 'Kredensial salah');
         return back()->withErrors([
-            'username' => 'Username, NIP, email, atau password salah.',
+            'username' => 'Username, NIM, NIP, email, atau password salah.',
         ])->onlyInput('username');
     }
 
