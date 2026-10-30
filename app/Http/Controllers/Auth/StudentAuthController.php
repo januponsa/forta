@@ -13,7 +13,15 @@ class StudentAuthController extends Controller
 {
     public function showLogin()
     {
-        return view('student.login');
+        if (Auth::guard('student')->check()) {
+            return redirect()->route('student.dashboard');
+        }
+
+        if (Auth::guard('web')->check()) {
+            return app(AdminAuthController::class)->redirectByRole(Auth::guard('web')->user());
+        }
+
+        return view('admin.login');
     }
 
     public function redirectGoogle()
@@ -30,15 +38,32 @@ class StudentAuthController extends Controller
                 ->redirectUrl(config('services.google.student_redirect'))
                 ->user();
         } catch (\Exception $e) {
-            return redirect()->route('student.login')->with('error', 'Gagal login dengan Google.');
+            return redirect()->route('login')->with('error', 'Gagal login dengan Google.');
         }
 
         $email = $googleUser->getEmail();
         $domain = strtolower(substr(strrchr($email, "@"), 1));
 
+        // If a Lecturer or Admin logs in using the unified Google button (which uses student_redirect URI),
+        // automatically route them to the Staff/Lecturer/Admin handler!
+        if ($domain === config('auth.admin_domain')) {
+            return app(AdminAuthController::class)->handleUnifiedGoogleUser($request, $googleUser);
+        }
+
+        return $this->processStudentGoogleLogin($request, $googleUser);
+    }
+
+    public function processStudentGoogleLogin(Request $request, $googleUser)
+    {
+        $email = $googleUser->getEmail();
+        $domain = strtolower(substr(strrchr($email, "@"), 1));
+
         if ($domain !== config('auth.student_domain')) {
-            $this->logAuth('student', null, $email, 'oauth_rejected', 'Bukan email student.');
-            return redirect()->route('student.login')->with('error', 'Gunakan email mahasiswa Anda (@' . config('auth.student_domain') . ')');
+            $this->logAuth('student', null, $email, 'oauth_rejected', 'Bukan email institusi yang diizinkan.');
+            return redirect()->route('login')->with(
+                'error',
+                'Gunakan email institusi Anda (@' . config('auth.student_domain') . ' untuk Mahasiswa atau @' . config('auth.admin_domain') . ' untuk Dosen/Admin).'
+            );
         }
 
         $normalizedEmail = strtolower(trim($email));
@@ -62,12 +87,12 @@ class StudentAuthController extends Controller
 
             if (!$student->login_enabled) {
                 $this->logAuth('student', $student->id, $normalizedEmail, 'login_failed', 'Login dinonaktifkan.');
-                return redirect()->route('student.login')->with('error', 'Akses login Anda dinonaktifkan. Hubungi admin prodi.');
+                return redirect()->route('login')->with('error', 'Akses login Anda dinonaktifkan. Hubungi admin prodi.');
             }
 
             if ($student->approval_status !== 'approved') {
                 $this->logAuth('student', $student->id, $normalizedEmail, 'login_failed', 'Status belum disetujui: ' . $student->approval_status);
-                return redirect()->route('student.login')->with('error', 'Pendaftaran akun Anda masih dalam status: ' . $student->approval_status);
+                return redirect()->route('login')->with('error', 'Pendaftaran akun Anda masih dalam status: ' . $student->approval_status);
             }
 
             // Safe bind of Google ID
@@ -75,7 +100,7 @@ class StudentAuthController extends Controller
                 $student->google_id = $googleUser->getId();
             } elseif ($student->google_id !== $googleUser->getId()) {
                 $this->logAuth('student', $student->id, $normalizedEmail, 'oauth_rejected', 'Konflik Google ID.');
-                return redirect()->route('student.login')->with('error', 'Konflik otentikasi. Email ini terkait dengan Google ID lain.');
+                return redirect()->route('login')->with('error', 'Konflik otentikasi. Email ini terkait dengan Google ID lain.');
             }
 
             if (empty($student->avatar)) {

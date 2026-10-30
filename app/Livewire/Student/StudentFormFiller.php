@@ -5,6 +5,7 @@ namespace App\Livewire\Student;
 use App\Models\Form;
 use App\Models\Submission;
 use App\Models\SubmissionFile;
+use App\Models\DefenseCase;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Livewire\Component;
@@ -353,6 +354,47 @@ class StudentFormFiller extends Component
                         ]);
                     }
                 }
+            }
+
+            // Auto-create DefenseCase if this form is internship defense registration
+            if ($this->form->form_code === 'INTERNSHIP_DEFENSE_REGISTRATION') {
+                $fieldMap = [];
+                foreach ($this->form->fields as $f) {
+                    if (isset($this->responses[$f->id])) {
+                        $fieldMap[$f->name] = $this->responses[$f->id];
+                    }
+                }
+
+                $getAnswer = function($keys, $default = 'N/A') use ($fieldMap) {
+                    foreach ((array)$keys as $k) {
+                        if (isset($fieldMap[$k]) && !empty($fieldMap[$k])) return $fieldMap[$k];
+                        if (isset($this->responses[$k]) && !empty($this->responses[$k])) return $this->responses[$k];
+                    }
+                    return $default;
+                };
+
+                $startDate = $getAnswer(['INTDEF_internship_start_date', 'internship_start_date'], null);
+                $endDate = $getAnswer(['INTDEF_internship_end_date', 'internship_end_date'], null);
+                $period = ($startDate && $endDate) ? ($startDate . ' s/d ' . $endDate) : $getAnswer(['internship_period'], 'N/A');
+                $semester = $getAnswer(['semester'], $this->form->semester ?? 'Ganjil 2025/2026');
+
+                DefenseCase::firstOrCreate(
+                    ['submission_id' => $submission->id],
+                    [
+                        'student_id' => $student->id,
+                        'defense_type' => 'internship_defense',
+                        'semester' => $semester,
+                        'status' => 'registered',
+                        'metadata' => [
+                            'company_name' => $getAnswer(['INTDEF_company_name', 'company_name']),
+                            'company_address' => $getAnswer(['INTDEF_company_address', 'company_address']),
+                            'mentor_name' => $getAnswer(['INTDEF_mentor_name', 'mentor_name']),
+                            'mentor_position' => $getAnswer(['INTDEF_mentor_position', 'mentor_position'], 'Mentor Lapangan'),
+                            'report_title' => $getAnswer(['INTDEF_report_title', 'report_title'], 'Laporan Kerja Praktik'),
+                            'internship_period' => $period,
+                        ]
+                    ]
+                );
             }
 
             DB::commit();

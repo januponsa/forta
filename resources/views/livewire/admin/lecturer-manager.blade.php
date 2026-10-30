@@ -143,6 +143,12 @@
                         </div>
 
                         <div>
+                            <label for="password" class="block text-sm font-semibold text-slate-700">Password Login (Opsional)</label>
+                            <input type="password" wire:model="password" id="password" placeholder="{{ $lecturerId ? 'Biarkan kosong jika tidak ingin mengubah password' : 'Kosongkan untuk default menggunakan NIP / dosen123' }}" class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-slate-300 rounded-md py-2 px-3">
+                            @error('password') <span class="text-red-500 text-xs mt-1 block">{{ $message }}</span> @enderror
+                        </div>
+
+                        <div>
                             <label for="position" class="block text-sm font-semibold text-slate-700">Jabatan Struktural (Opsional)</label>
                             <input type="text" wire:model="position" id="position" placeholder="Contoh: Kepala Program Studi" class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-slate-300 rounded-md py-2 px-3">
                             @error('position') <span class="text-red-500 text-xs mt-1 block">{{ $message }}</span> @enderror

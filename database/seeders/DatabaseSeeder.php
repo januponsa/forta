@@ -117,7 +117,8 @@ class DatabaseSeeder extends Seeder
         ReminderRecipient::create(['name' => 'Kaprodi', 'email' => 'kaprodi@pradita.ac.id', 'role' => 'kaprodi']);
         ReminderRecipient::create(['name' => 'Sekprodi', 'email' => 'sekprodi@pradita.ac.id', 'role' => 'sekprodi']);
 
-        // 6. Data Dummy AI Dashboard & Analytics
+        // 6. Data Dummy AI Dashboard & Analytics & Akun Dosen
+        $this->call(LecturerAccountSeeder::class);
         $this->call(AiDashboardDummySeeder::class);
     }
 }

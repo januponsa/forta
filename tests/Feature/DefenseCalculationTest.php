@@ -32,9 +32,9 @@ class DefenseCalculationTest extends TestCase
         $service = new DefenseCalculationService();
         
         $form = $activity = \App\Models\ActivityType::create(['name' => 'Test', 'slug' => 'test']);
-        Form::create(['title' => 'Test', 'slug' => 'test', 'form_code' => 'INTERNSHIP_DEFENSE_REGISTRATION', 'activity_type_id' => $activity->id, 'phase' => 'registration']);
+        Form::create(['title' => 'Test', 'slug' => 'test', 'form_code' => 'INTERNSHIP_DEFENSE_REGISTRATION', 'activity_type_id' => $activity->id, 'phase' => 'registration', 'semester' => 'Ganjil 2026/2027', 'status' => 'active']);
         $student = Student::create(['nim' => '123456', 'name' => 'John', 'email' => 'john@test.com', 'angkatan' => '2020']);
-        $submission = Submission::create(['form_id' => $form->id, 'nim' => '123456', 'name' => 'John', 'email' => 'john@test.com', 'status' => 'approved']);
+        $submission = Submission::create(['form_id' => $form->id, 'nim' => '123456', 'name' => 'John', 'email' => 'john@test.com', 'status' => 'approved', 'answers' => [], 'submitted_at' => now()]);
         
         $case = DefenseCase::create([
             'submission_id' => $submission->id,

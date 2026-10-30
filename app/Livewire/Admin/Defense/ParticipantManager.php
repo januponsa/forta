@@ -24,18 +24,41 @@ class ParticipantManager extends Component
             $student = Student::where('nim', $submission->nim)->first();
             if (!$student) continue;
 
-            $answers = $submission->answers;
-            // Fallback to submission semester or default
-            $semester = $answers['semester'] ?? $submission->form->semester ?? 'Ganjil 2025/2026';
+            $answers = $submission->answers ?? [];
             
+            // Build name-to-value map for form fields if answers keyed by field ID
+            $fieldMap = [];
+            if ($submission->form && $submission->form->fields) {
+                foreach ($submission->form->fields as $f) {
+                    if (isset($answers[$f->id])) {
+                        $fieldMap[$f->name] = $answers[$f->id];
+                    }
+                }
+            }
+
+            $getAnswer = function($keys, $default = 'N/A') use ($answers, $fieldMap) {
+                foreach ((array)$keys as $k) {
+                    if (isset($fieldMap[$k]) && !empty($fieldMap[$k])) return $fieldMap[$k];
+                    if (isset($answers[$k]) && !empty($answers[$k])) return $answers[$k];
+                }
+                return $default;
+            };
+
+            // Fallback to submission semester or default
+            $semester = $getAnswer(['semester'], $submission->form->semester ?? 'Ganjil 2025/2026');
+            
+            $startDate = $getAnswer(['INTDEF_internship_start_date', 'internship_start_date'], null);
+            $endDate = $getAnswer(['INTDEF_internship_end_date', 'internship_end_date'], null);
+            $period = ($startDate && $endDate) ? ($startDate . ' s/d ' . $endDate) : $getAnswer(['internship_period'], 'N/A');
+
             // Extract metadata (company, mentor, etc)
             $metadata = [
-                'company_name' => $answers['company_name'] ?? 'N/A',
-                'company_address' => $answers['company_address'] ?? 'N/A',
-                'mentor_name' => $answers['mentor_name'] ?? 'N/A',
-                'mentor_position' => $answers['mentor_position'] ?? 'N/A',
-                'report_title' => $answers['report_title'] ?? 'Laporan Kerja Praktik',
-                'internship_period' => $answers['internship_period'] ?? 'N/A',
+                'company_name' => $getAnswer(['INTDEF_company_name', 'company_name']),
+                'company_address' => $getAnswer(['INTDEF_company_address', 'company_address']),
+                'mentor_name' => $getAnswer(['INTDEF_mentor_name', 'mentor_name']),
+                'mentor_position' => $getAnswer(['INTDEF_mentor_position', 'mentor_position'], 'Mentor Lapangan'),
+                'report_title' => $getAnswer(['INTDEF_report_title', 'report_title'], 'Laporan Kerja Praktik'),
+                'internship_period' => $period,
             ];
 
             // Only create if not exists

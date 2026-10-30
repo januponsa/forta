@@ -195,7 +195,9 @@
                     @endif
                 </td>
                 <td style="vertical-align: bottom; padding-bottom: 3px;">
-                    {{-- empty right side, title goes below --}}
+                    @if(isset($template) && $template->university_name)
+                        <div style="font-weight: bold; font-size: 14pt; color: #1f497d;">{{ $template->university_name }}</div>
+                    @endif
                 </td>
             </tr>
         </table>

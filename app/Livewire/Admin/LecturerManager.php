@@ -6,6 +6,8 @@ use Livewire\Component;
 use Livewire\WithPagination;
 use Livewire\WithFileUploads;
 use App\Models\Lecturer;
+use App\Models\User;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 
 class LecturerManager extends Component
@@ -20,6 +22,7 @@ class LecturerManager extends Component
     public $nip;
     public $name;
     public $email;
+    public $password;
     public $is_active = true;
     
     public $position;
@@ -48,6 +51,7 @@ class LecturerManager extends Component
             'nip' => 'nullable|string|max:255|unique:lecturers,nip,' . $this->lecturerId,
             'name' => 'required|string|max:255',
             'email' => 'nullable|email|max:255|unique:lecturers,email,' . $this->lecturerId,
+            'password' => 'nullable|string|min:6',
             'position' => 'nullable|string|max:255',
             'is_active' => 'boolean',
             'include_name' => 'boolean',
@@ -96,6 +100,7 @@ class LecturerManager extends Component
         $this->nip = '';
         $this->name = '';
         $this->email = '';
+        $this->password = '';
         $this->is_active = true;
         
         $this->position = null;
@@ -114,10 +119,12 @@ class LecturerManager extends Component
     {
         $this->validate();
 
+        $normalizedEmail = $this->email ? strtolower(trim($this->email)) : null;
+
         $data = [
-            'nip' => $this->nip,
+            'nip' => $this->nip ?: null,
             'name' => $this->name,
-            'email' => $this->email,
+            'email' => $normalizedEmail,
             'position' => $this->position,
             'is_active' => $this->is_active,
             'include_name' => $this->include_name,
@@ -129,12 +136,9 @@ class LecturerManager extends Component
         $lecturer = $this->lecturerId ? Lecturer::find($this->lecturerId) : null;
 
         if ($this->signature) {
-            // Delete old signature if exists
             if ($lecturer && $lecturer->signature_path) {
                 Storage::disk('public')->delete($lecturer->signature_path);
             }
-
-            // Store new signature
             $data['signature_path'] = $this->signature->store('document-assets/signatures', 'public');
         }
 
@@ -143,6 +147,52 @@ class LecturerManager extends Component
                 Storage::disk('public')->delete($lecturer->stamp_path);
             }
             $data['stamp_path'] = $this->stamp->store('document-assets/stamps', 'public');
+        }
+
+        // Sync or create User account so the Lecturer can log in directly
+        if ($normalizedEmail || $this->nip) {
+            $user = null;
+            if ($lecturer && $lecturer->user_id) {
+                $user = User::find($lecturer->user_id);
+            }
+            if (!$user && $normalizedEmail) {
+                $user = User::where('normalized_email', $normalizedEmail)
+                    ->orWhere('email', $normalizedEmail)
+                    ->first();
+            }
+
+            $userEmail = $normalizedEmail ?: (strtolower(trim($this->nip)) . '@' . config('auth.admin_domain', 'pradita.ac.id'));
+            $baseUsername = $this->nip ? strtolower(trim($this->nip)) : explode('@', $userEmail)[0];
+
+            if ($user) {
+                $user->name = $this->name;
+                $user->email = $userEmail;
+                $user->normalized_email = $userEmail;
+                $user->is_active = $this->is_active;
+                if ($this->password) {
+                    $user->password = Hash::make($this->password);
+                }
+                $user->save();
+            } else {
+                $username = $baseUsername;
+                $counter = 1;
+                while (User::where('username', $username)->exists()) {
+                    $username = $baseUsername . $counter++;
+                }
+
+                $defaultPassword = $this->password ?: ($this->nip ?: 'dosen123');
+                $user = User::create([
+                    'name' => $this->name,
+                    'username' => $username,
+                    'email' => $userEmail,
+                    'normalized_email' => $userEmail,
+                    'password' => Hash::make($defaultPassword),
+                    'role' => 'dosen',
+                    'is_active' => $this->is_active,
+                ]);
+            }
+
+            $data['user_id'] = $user->id;
         }
 
         Lecturer::updateOrCreate(['id' => $this->lecturerId], $data);
@@ -160,6 +210,7 @@ class LecturerManager extends Component
         $this->nip = $lecturer->nip;
         $this->name = $lecturer->name;
         $this->email = $lecturer->email;
+        $this->password = '';
         $this->position = $lecturer->position;
         $this->is_active = $lecturer->is_active;
         $this->include_name = (bool)$lecturer->include_name;

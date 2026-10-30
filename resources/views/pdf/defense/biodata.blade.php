@@ -112,6 +112,14 @@
         <td>:</td>
         <td>{{ $mentorNip }}</td>
     </tr>
+    @if(!empty($case->metadata['company_name']))
+    <tr>
+        <td>12.</td>
+        <td style="font-weight: bold;">Nama Perusahaan</td>
+        <td>:</td>
+        <td>{{ $case->metadata['company_name'] }}</td>
+    </tr>
+    @endif
 </table>
 
 <table class="info-table">

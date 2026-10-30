@@ -33,7 +33,7 @@ class UserManager extends Component
             'name' => 'required|string|max:255',
             'username' => 'required|string|max:255|unique:users,username' . ($this->userId ? ',' . $this->userId : ''),
             'email' => 'required|email|max:255|unique:users,email' . ($this->userId ? ',' . $this->userId : ''),
-            'role' => 'required|string',
+            'role' => 'required|string|in:superadmin,admin_forta,dosen',
             'is_active' => 'boolean',
         ];
 
@@ -91,10 +91,13 @@ class UserManager extends Component
     {
         $this->validate();
 
+        $normalizedEmail = strtolower(trim($this->email));
+
         $data = [
             'name' => $this->name,
             'username' => $this->username,
-            'email' => $this->email,
+            'email' => $normalizedEmail,
+            'normalized_email' => $normalizedEmail,
             'role' => $this->role,
             'is_active' => $this->is_active,
         ];

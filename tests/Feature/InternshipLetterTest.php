@@ -84,6 +84,16 @@ class InternshipLetterTest extends TestCase
         $admin = User::create(['name' => 'A', 'email' => 'a@a.c', 'password' => 'x', 'role' => 'superadmin']);
         $student = Student::create(['name' => 'S1', 'nim' => '123', 'email' => 's1@m.c', 'password' => 'x', 'angkatan' => 2020, 'program_studi' => 'Informatika']);
         
+        Storage::disk('public')->put('signatures/sig.png', base64_decode('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII='));
+        $lecturer = \App\Models\Lecturer::create([
+            'name' => 'Sign Name',
+            'position' => 'Sign Pos',
+            'email' => 'sign@univ.ac.id',
+            'is_active' => true,
+            'signature_path' => 'signatures/sig.png',
+            'allowed_roles' => ['superadmin'],
+        ]);
+
         LetterTemplate::create([
             'type' => 'internship',
             'university_name' => 'Univ',
@@ -98,6 +108,12 @@ class InternshipLetterTest extends TestCase
             'signatory_name' => 'Sign Name',
             'signatory_position' => 'Sign Pos',
             'number_format' => '{nomor_urut}/{kode_surat}/{tahun}',
+            'lecturer_id' => $lecturer->id,
+            'sig_page' => 1,
+            'sig_x' => 100,
+            'sig_y' => 100,
+            'sig_width' => 40,
+            'sig_height' => 20,
         ]);
 
         $req = InternshipLetterRequest::create([
@@ -114,7 +130,7 @@ class InternshipLetterTest extends TestCase
             ->test(\App\Livewire\Admin\InternshipLetter\RequestDetail::class, ['id' => $req->id])
             ->call('approveAndGenerate')
             ->assertHasNoErrors()
-            ->assertSessionHas('message');
+            ->assertSee('Surat Magang berhasil ditandatangani dan di-generate');
 
         $req->refresh();
         

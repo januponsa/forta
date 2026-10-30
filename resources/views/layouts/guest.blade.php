@@ -30,10 +30,19 @@
 
                 <!-- Auth Buttons Desktop -->
                 <div class="hidden md:flex items-center space-x-4">
-                    <a href="{{ route('admin.login') }}" class="text-sm font-medium text-slate-600 hover:text-slate-900 transition-colors">Masuk Admin</a>
-                    <a href="{{ route('student.login') }}" class="inline-flex items-center justify-center px-5 py-2 text-sm font-semibold text-white transition-colors bg-teal-600 rounded-md hover:bg-teal-700 shadow-sm">
-                        Masuk Mahasiswa
-                    </a>
+                    @if(Auth::guard('student')->check())
+                        <a href="{{ route('student.dashboard') }}" class="inline-flex items-center justify-center px-5 py-2 text-sm font-semibold text-white transition-colors bg-teal-600 rounded-md hover:bg-teal-700 shadow-sm">
+                            Dashboard Mahasiswa
+                        </a>
+                    @elseif(Auth::guard('web')->check())
+                        <a href="{{ in_array(Auth::guard('web')->user()->role, ['dosen', 'lecturer']) ? route('lecturer.defenses.internship.my-defenses') : route('admin.dashboard') }}" class="inline-flex items-center justify-center px-5 py-2 text-sm font-semibold text-white transition-colors bg-teal-600 rounded-md hover:bg-teal-700 shadow-sm">
+                            Dashboard
+                        </a>
+                    @else
+                        <a href="{{ route('login') }}" class="inline-flex items-center justify-center px-5 py-2 text-sm font-semibold text-white transition-colors bg-teal-600 rounded-md hover:bg-teal-700 shadow-sm">
+                            Masuk
+                        </a>
+                    @endif
                 </div>
 
                 <!-- Mobile Menu Button -->
@@ -58,8 +67,7 @@
                 <a href="#kalender-akademik" @click="mobileMenuOpen = false" class="block px-3 py-3 rounded-md text-base font-medium text-slate-700 hover:bg-slate-50 hover:text-teal-600">Kalender Akademik</a>
                 
                 <div class="mt-4 pt-4 border-t border-slate-200 flex flex-col gap-3">
-                    <a href="{{ route('student.login') }}" class="w-full inline-flex items-center justify-center px-4 py-2.5 text-base font-semibold text-white bg-teal-600 rounded-md hover:bg-teal-700">Masuk Mahasiswa</a>
-                    <a href="{{ route('admin.login') }}" class="w-full inline-flex items-center justify-center px-4 py-2.5 text-base font-semibold text-slate-700 bg-white border border-slate-300 rounded-md hover:bg-slate-50">Masuk Admin</a>
+                    <a href="{{ route('login') }}" class="w-full inline-flex items-center justify-center px-4 py-2.5 text-base font-semibold text-white bg-teal-600 rounded-md hover:bg-teal-700">Masuk</a>
                 </div>
             </div>
         </div>
@@ -99,8 +107,7 @@
                 <div>
                     <h3 class="text-sm font-semibold text-white tracking-wider uppercase mb-4">Akses Sistem</h3>
                     <ul class="space-y-3 text-sm">
-                        <li><a href="{{ route('student.login') }}" class="hover:text-teal-400 transition-colors">Login Mahasiswa (SSO)</a></li>
-                        <li><a href="{{ route('admin.login') }}" class="hover:text-teal-400 transition-colors">Login Administrator</a></li>
+                        <li><a href="{{ route('login') }}" class="hover:text-teal-400 transition-colors">Masuk Sistem (Mahasiswa / Dosen / Admin)</a></li>
                     </ul>
                 </div>
             </div>

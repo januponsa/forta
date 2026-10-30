@@ -118,8 +118,8 @@
         @endforeach
         
         <tr>
-            <td colspan="2" style="text-align: right; font-weight: bold; padding-right: 10px;">RATA-RATA NILAI MENTOR</td>
-            <td style="text-align: center; font-weight: bold; font-size: 12pt;">{{ round($average) }}</td>
+            <td colspan="2" style="text-align: right; font-weight: bold; padding-right: 10px;">Rata-Rata Nilai Mentor</td>
+            <td style="text-align: center; font-weight: bold; font-size: 12pt;">{{ number_format($average, 2) }}</td>
         </tr>
     </tbody>
 </table>
@@ -135,7 +135,7 @@
             <div>Tangerang, &nbsp; {{ $tanggal }} &nbsp; {{ $bulan }} &nbsp;&nbsp;&nbsp;&nbsp; {{ $tahun }}</div>
             <div>Mentor,</div>
             <div style="height: 60px; font-size: 9pt; color: #777; font-style: italic; padding-top: 20px;">
-                (Tanda tangan asli pada dokumen sumber)
+                (Tanda tangan asli terdapat pada dokumen sumber)
             </div>
             <div>{{ $mentor }}</div>
             <div>NIP &nbsp;&nbsp; {{ $mentorNip }}</div>

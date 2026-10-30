@@ -111,7 +111,7 @@ class RequestDetail extends Component
         session()->flash('message', 'Permohonan berhasil ditolak.');
     }
 
-    public function approveAndGenerate(LetterGeneratorService $generatorService, \App\Services\InternshipLetterPdfService $pdfService)
+    public function approveAndGenerate(LetterGeneratorService $generatorService, \App\Services\InternshipLetterPdfService $pdfService, PdfSignatureService $sigService)
     {
         // Save current form values
         $this->updateCompanyDetails();
@@ -154,7 +154,7 @@ class RequestDetail extends Component
                         'include_stamp' => true,
                     ]
                 ];
-                $this->finalizeSignature($pdfService);
+                $this->finalizeSignature($sigService);
                 return;
             }
         }
@@ -332,6 +332,7 @@ class RequestDetail extends Component
             $this->closePreviewModal();
 
         } catch (\Exception $e) {
+            \Log::error('FINALIZE_SIGNATURE_ERROR: ' . $e->getMessage() . "\n" . $e->getTraceAsString());
             session()->flash('error', 'Gagal memproses tanda tangan: ' . $e->getMessage());
         }
     }

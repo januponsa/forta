@@ -3,7 +3,6 @@
 namespace Tests\Feature;
 
 use App\Livewire\Student\SignatureRequestForm;
-use App\Models\Signatory;
 use App\Models\SignatureRequest;
 use App\Models\Student;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -25,23 +24,12 @@ class SignatureRequestFormTest extends TestCase
     public function test_valid_student_can_submit_request()
     {
         $student = Student::create(['nim' => '123', 'name' => 'Test', 'email' => 'test@test.com', 'angkatan' => 2020]);
-        $signatory = Signatory::create([
-            'name' => 'Dr. Budi',
-            'position' => 'Dekan',
-            'role' => 'Penandatangan',
-            'email' => 'budi@test.com',
-            'is_active' => true,
-            'default_width' => 150,
-            'default_height' => 75,
-            'signature_path' => 'dummy/path.png'
-        ]);
 
         $file = UploadedFile::fake()->create('document.pdf', 100, 'application/pdf');
 
         Livewire::actingAs($student, 'student')
             ->test(SignatureRequestForm::class)
             ->set('title', 'Surat Izin')
-            ->set('signatory_id', $signatory->id)
             ->set('page_number', 1)
             ->set('x_pos', 10)
             ->set('y_pos', 20)
@@ -56,7 +44,6 @@ class SignatureRequestFormTest extends TestCase
         $this->assertDatabaseHas('signature_requests', [
             'student_id' => $student->id,
             'title' => 'Surat Izin',
-            'signatory_id' => $signatory->id,
             'status' => 'submitted',
         ]);
 
@@ -69,21 +56,9 @@ class SignatureRequestFormTest extends TestCase
         $student1 = Student::create(['nim' => '1234', 'name' => 'A', 'email' => 'a@a.com', 'angkatan' => 2020]);
         $student2 = Student::create(['nim' => '1235', 'name' => 'B', 'email' => 'b@b.com', 'angkatan' => 2020]);
 
-        $signatory = Signatory::create([
-            'name' => 'Dr. Budi',
-            'position' => 'Dekan',
-            'role' => 'Penandatangan',
-            'email' => 'budi@test.com',
-            'is_active' => true,
-            'default_width' => 150,
-            'default_height' => 75,
-            'signature_path' => 'dummy/path.png'
-        ]);
-
         $request = SignatureRequest::create([
             'student_id' => $student1->id,
             'title' => 'Surat Budi',
-            'signatory_id' => 1,
             'page_number' => 1,
             'x_pos' => 10,
             'y_pos' => 10,
@@ -104,21 +79,10 @@ class SignatureRequestFormTest extends TestCase
     public function test_can_update_own_draft()
     {
         $student = Student::create(['nim' => '1236', 'name' => 'C', 'email' => 'c@c.com', 'angkatan' => 2020]);
-        $signatory = Signatory::create([
-            'name' => 'Dr. Budi',
-            'position' => 'Dekan',
-            'role' => 'Penandatangan',
-            'email' => 'budi@test.com',
-            'is_active' => true,
-            'default_width' => 150,
-            'default_height' => 75,
-            'signature_path' => 'dummy/path.png'
-        ]);
 
         $request = SignatureRequest::create([
             'student_id' => $student->id,
             'title' => 'Draft Awal',
-            'signatory_id' => $signatory->id,
             'page_number' => 1,
             'x_pos' => 10,
             'y_pos' => 10,
@@ -155,21 +119,9 @@ class SignatureRequestFormTest extends TestCase
     {
         $student = Student::create(['nim' => '1237', 'name' => 'D', 'email' => 'd@d.com', 'angkatan' => 2020]);
 
-        $signatory = Signatory::create([
-            'name' => 'Dr. Budi',
-            'position' => 'Dekan',
-            'role' => 'Penandatangan',
-            'email' => 'budi@test.com',
-            'is_active' => true,
-            'default_width' => 150,
-            'default_height' => 75,
-            'signature_path' => 'dummy/path.png'
-        ]);
-
         $request = SignatureRequest::create([
             'student_id' => $student->id,
             'title' => 'Sudah Submit',
-            'signatory_id' => 1,
             'page_number' => 1,
             'x_pos' => 10,
             'y_pos' => 10,

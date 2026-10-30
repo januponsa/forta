@@ -17,7 +17,7 @@ class StudentMiddleware
     {
         if (! \Illuminate\Support\Facades\Auth::guard('student')->check()) {
             $request->session()->put('url.intended', $request->fullUrl());
-            return redirect()->route('student.login');
+            return redirect()->route('login');
         }
 
         return $next($request);

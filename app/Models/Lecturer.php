@@ -27,6 +27,7 @@ class Lecturer extends Model
     {
         return [
             'is_active' => 'boolean',
+            'allowed_roles' => 'array',
         ];
     }
 }

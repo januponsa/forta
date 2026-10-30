@@ -3,69 +3,132 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Models\Lecturer;
+use App\Models\Student;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
 use Laravel\Socialite\Facades\Socialite;
 
 class AdminAuthController extends Controller
 {
     /**
-     * Show the admin login view.
+     * Show the unified login view.
      */
     public function showLogin()
     {
+        if (Auth::guard('web')->check()) {
+            return $this->redirectByRole(Auth::guard('web')->user());
+        }
+
+        if (Auth::guard('student')->check()) {
+            return redirect()->route('student.dashboard');
+        }
+
         return view('admin.login');
     }
 
     /**
-     * Redirect to Google OAuth.
+     * Redirect to Google OAuth (Admin/Unified endpoint).
      */
     public function redirectGoogle()
     {
+        $redirectUrl = config('services.google.admin_redirect') ?: config('services.google.student_redirect');
+
         return Socialite::driver('google')
-            ->redirectUrl(config('services.google.admin_redirect'))
+            ->redirectUrl($redirectUrl)
             ->redirect();
     }
 
     /**
-     * Handle Google OAuth callback.
+     * Handle Google OAuth callback (supports Admin, Lecturer/Dosen, and Student automatically).
      */
-    public function callbackGoogle()
+    public function callbackGoogle(Request $request)
     {
+        $redirectUrl = config('services.google.admin_redirect') ?: config('services.google.student_redirect');
+
         try {
             $googleUser = Socialite::driver('google')
-                ->redirectUrl(config('services.google.admin_redirect'))
+                ->redirectUrl($redirectUrl)
                 ->user();
         } catch (\Exception $e) {
-            return redirect()->route('admin.login')->with('error', 'Gagal login dengan Google.');
+            return redirect()->route('login')->with('error', 'Gagal login dengan Google.');
         }
 
+        return $this->handleUnifiedGoogleUser($request, $googleUser);
+    }
+
+    /**
+     * Shared unified Google OAuth handler that detects Student, Lecturer (Dosen), or Admin role.
+     */
+    public function handleUnifiedGoogleUser(Request $request, $googleUser)
+    {
         $email = $googleUser->getEmail();
-        $domain = strtolower(substr(strrchr($email, "@"), 1));
+        $normalizedEmail = strtolower(trim($email));
+        $domain = strtolower(substr(strrchr($normalizedEmail, "@"), 1));
 
-        if ($domain !== config('auth.admin_domain')) {
-            $this->logAuth('admin', null, $email, 'oauth_rejected', 'Domain email tidak valid untuk pengelola.');
-            return redirect()->route('admin.login')->with('error', 'Domain email tidak diizinkan. Gunakan email @' . config('auth.admin_domain'));
+        // 1. Check if email belongs to Student domain (@student.pradita.ac.id) or existing Student record
+        if ($domain === config('auth.student_domain') || Student::withTrashed()->where('normalized_email', $normalizedEmail)->exists()) {
+            return app(StudentAuthController::class)->processStudentGoogleLogin($request, $googleUser);
         }
 
-        $normalizedEmail = strtolower(trim($email));
-        $user = User::where('normalized_email', $normalizedEmail)->first();
+        // 2. Check if email belongs to Staff/Lecturer/Admin domain (@pradita.ac.id)
+        if ($domain !== config('auth.admin_domain')) {
+            $this->logAuth('admin', null, $email, 'oauth_rejected', 'Domain email tidak valid.');
+            return redirect()->route('login')->with(
+                'error',
+                'Domain email tidak diizinkan. Gunakan email @' . config('auth.student_domain') . ' (Mahasiswa) atau @' . config('auth.admin_domain') . ' (Dosen & Pengelola).'
+            );
+        }
+
+        $user = User::where('normalized_email', $normalizedEmail)
+            ->orWhere('email', $normalizedEmail)
+            ->first();
+
+        // Check if Lecturer exists with this email and auto-provision/link User account if needed
+        $lecturer = Lecturer::whereRaw('LOWER(email) = ?', [$normalizedEmail])->first();
+
+        if (!$user && $lecturer) {
+            $baseUsername = $lecturer->nip ?: explode('@', $normalizedEmail)[0];
+            $username = $baseUsername;
+            $counter = 1;
+            while (User::where('username', $username)->exists()) {
+                $username = $baseUsername . $counter++;
+            }
+
+            $user = User::create([
+                'name' => $lecturer->name,
+                'username' => $username,
+                'email' => $normalizedEmail,
+                'normalized_email' => $normalizedEmail,
+                'password' => Hash::make($lecturer->nip ?: Str::random(16)),
+                'role' => 'dosen',
+                'is_active' => (bool) $lecturer->is_active,
+            ]);
+
+            $lecturer->user_id = $user->id;
+            $lecturer->save();
+        } elseif ($user && $lecturer && !$lecturer->user_id) {
+            $lecturer->user_id = $user->id;
+            $lecturer->save();
+        }
 
         if (!$user) {
             $this->logAuth('admin', null, $normalizedEmail, 'oauth_rejected', 'User tidak terdaftar.');
-            return redirect()->route('admin.login')->with('error', 'Akun Google ini belum terdaftar sebagai pengelola FORTA. Hubungi administrator Program Studi Informatika.');
+            return redirect()->route('login')->with('error', 'Akun Google ini belum terdaftar sebagai Dosen maupun Pengelola FORTA. Hubungi administrator Program Studi Informatika.');
         }
 
-        if (!$user->is_active) {
+        if (!$user->is_active || ($lecturer && !$lecturer->is_active)) {
             $this->logAuth('admin', $user->id, $normalizedEmail, 'account_disabled', 'Akun dinonaktifkan.');
-            return redirect()->route('admin.login')->with('error', 'Akun Anda dinonaktifkan. Silakan hubungi administrator.');
+            return redirect()->route('login')->with('error', 'Akun Anda dinonaktifkan. Silakan hubungi administrator.');
         }
 
-        if (!in_array($user->role, ['superadmin', 'admin_forta'])) {
+        if (!in_array($user->role, ['superadmin', 'admin_forta', 'dosen', 'lecturer'])) {
             $this->logAuth('admin', $user->id, $normalizedEmail, 'oauth_rejected', 'Role tidak valid.');
-            return redirect()->route('admin.login')->with('error', 'Anda tidak memiliki hak akses sebagai pengelola.');
+            return redirect()->route('login')->with('error', 'Anda tidak memiliki hak akses yang valid pada sistem.');
         }
 
         // Safe bind of Google ID
@@ -73,25 +136,30 @@ class AdminAuthController extends Controller
             $user->google_id = $googleUser->getId();
         } elseif ($user->google_id !== $googleUser->getId()) {
             $this->logAuth('admin', $user->id, $normalizedEmail, 'oauth_rejected', 'Konflik Google ID.');
-            return redirect()->route('admin.login')->with('error', 'Konflik otentikasi. Akun ini terkait dengan ID Google yang berbeda.');
+            return redirect()->route('login')->with('error', 'Konflik otentikasi. Akun ini terkait dengan ID Google yang berbeda.');
         }
 
+        $user->normalized_email = $normalizedEmail;
         $user->last_login_at = now();
-        $user->last_login_ip = request()->ip();
+        $user->last_login_ip = $request->ip();
         if (empty($user->avatar)) {
             $user->avatar = $googleUser->getAvatar();
         }
         $user->save();
 
-        Auth::guard('web')->login($user);
-        request()->session()->regenerate();
-        $this->logAuth('admin', $user->id, $normalizedEmail, 'login_success');
+        // Ensure lecturer profile exists if user has dosen/lecturer role
+        $this->ensureLecturerProfile($user);
 
-        return redirect()->intended('/admin/dashboard');
+        Auth::guard('web')->login($user);
+        $request->session()->regenerate();
+        $actorType = in_array($user->role, ['dosen', 'lecturer']) ? 'lecturer' : 'admin';
+        $this->logAuth($actorType, $user->id, $normalizedEmail, 'login_success');
+
+        return $this->redirectByRole($user);
     }
 
     /**
-     * Handle Credential Login (Username/Password).
+     * Handle Credential Login (Username / Email / NIP & Password).
      */
     public function loginCredential(Request $request)
     {
@@ -100,37 +168,120 @@ class AdminAuthController extends Controller
             'password' => 'required|string',
         ]);
 
-        $username = strtolower(trim($request->username));
-        $user = User::where('username', $username)->first();
+        $loginInput = strtolower(trim($request->username));
 
-        if ($user && Auth::guard('web')->attempt(['username' => $username, 'password' => $request->password], $request->boolean('remember'))) {
-            
-            if (!$user->is_active) {
-                Auth::guard('web')->logout();
-                $this->logAuth('admin', $user->id, $username, 'account_disabled', 'Mencoba login credential saat nonaktif.');
+        // Find user by username, email, or normalized_email
+        $user = User::whereRaw('LOWER(username) = ?', [$loginInput])
+            ->orWhereRaw('LOWER(email) = ?', [$loginInput])
+            ->orWhere('normalized_email', $loginInput)
+            ->first();
+
+        // Also check if lecturer NIP or email matches
+        $lecturer = Lecturer::whereRaw('LOWER(nip) = ?', [$loginInput])
+            ->orWhereRaw('LOWER(email) = ?', [$loginInput])
+            ->first();
+
+        if (!$user && $lecturer) {
+            if ($lecturer->user_id) {
+                $user = User::find($lecturer->user_id);
+            } else {
+                // Auto-provision user account for existing lecturer record (default password: NIP or 'dosen123')
+                $defaultPassword = $lecturer->nip ?: 'dosen123';
+                $email = $lecturer->email ? strtolower(trim($lecturer->email)) : ($lecturer->nip . '@' . config('auth.admin_domain', 'pradita.ac.id'));
+                $baseUsername = $lecturer->nip ?: explode('@', $email)[0];
+                $username = $baseUsername;
+                $counter = 1;
+                while (User::where('username', $username)->exists()) {
+                    $username = $baseUsername . $counter++;
+                }
+
+                $user = User::create([
+                    'name' => $lecturer->name,
+                    'username' => $username,
+                    'email' => $email,
+                    'normalized_email' => $email,
+                    'password' => Hash::make($defaultPassword),
+                    'role' => 'dosen',
+                    'is_active' => (bool) $lecturer->is_active,
+                ]);
+
+                $lecturer->user_id = $user->id;
+                $lecturer->save();
+            }
+        } elseif ($user && $lecturer && !$lecturer->user_id) {
+            $lecturer->user_id = $user->id;
+            $lecturer->save();
+        }
+
+        if ($user && Hash::check($request->password, $user->password)) {
+            if (!$user->is_active || ($lecturer && !$lecturer->is_active)) {
+                $this->logAuth('admin', $user->id, $loginInput, 'account_disabled', 'Mencoba login credential saat nonaktif.');
                 return back()->with('error', 'Akun Anda dinonaktifkan.');
             }
 
-            if (!in_array($user->role, ['superadmin', 'admin_forta'])) {
-                Auth::guard('web')->logout();
-                $this->logAuth('admin', $user->id, $username, 'login_failed', 'Role tidak valid via credential.');
-                return back()->with('error', 'Anda tidak memiliki hak akses pengelola.');
+            if (!in_array($user->role, ['superadmin', 'admin_forta', 'dosen', 'lecturer'])) {
+                $this->logAuth('admin', $user->id, $loginInput, 'login_failed', 'Role tidak valid via credential.');
+                return back()->with('error', 'Anda tidak memiliki hak akses pada sistem.');
             }
+
+            $this->ensureLecturerProfile($user);
+
+            Auth::guard('web')->login($user, $request->boolean('remember'));
 
             $user->last_login_at = now();
             $user->last_login_ip = $request->ip();
             $user->save();
-            
-            $request->session()->regenerate();
-            $this->logAuth('admin', $user->id, $username, 'login_success', 'Via credentials');
 
-            return redirect()->intended('/admin/dashboard');
+            $request->session()->regenerate();
+            $actorType = in_array($user->role, ['dosen', 'lecturer']) ? 'lecturer' : 'admin';
+            $this->logAuth($actorType, $user->id, $loginInput, 'login_success', 'Via credentials');
+
+            return $this->redirectByRole($user);
         }
 
-        $this->logAuth('admin', $user ? $user->id : null, $username, 'login_failed', 'Kredensial salah');
+        $this->logAuth('admin', $user ? $user->id : null, $loginInput, 'login_failed', 'Kredensial salah');
         return back()->withErrors([
-            'username' => 'Username atau password salah.',
+            'username' => 'Username, NIP, email, atau password salah.',
         ])->onlyInput('username');
+    }
+
+    /**
+     * Redirect authenticated User based on their detected role.
+     */
+    public function redirectByRole(User $user)
+    {
+        if (in_array($user->role, ['dosen', 'lecturer'])) {
+            return redirect()->intended(route('lecturer.defenses.internship.my-defenses'));
+        }
+
+        return redirect()->intended(route('admin.dashboard'));
+    }
+
+    /**
+     * Ensure a Lecturer profile is linked when a user has role dosen/lecturer.
+     */
+    private function ensureLecturerProfile(User $user): void
+    {
+        if (!in_array($user->role, ['dosen', 'lecturer'])) {
+            return;
+        }
+
+        $lecturer = Lecturer::where('user_id', $user->id)->first();
+        if (!$lecturer && $user->email) {
+            $lecturer = Lecturer::whereRaw('LOWER(email) = ?', [strtolower(trim($user->email))])->first();
+            if ($lecturer) {
+                $lecturer->user_id = $user->id;
+                $lecturer->save();
+            } else {
+                Lecturer::create([
+                    'user_id' => $user->id,
+                    'nip' => $user->username,
+                    'name' => $user->name,
+                    'email' => $user->email,
+                    'is_active' => $user->is_active,
+                ]);
+            }
+        }
     }
 
     /**
@@ -138,18 +289,20 @@ class AdminAuthController extends Controller
      */
     public function logout(Request $request)
     {
-        $userId = Auth::guard('web')->id();
-        
+        $user = Auth::guard('web')->user();
+        $userId = $user?->id;
+        $actorType = ($user && in_array($user->role, ['dosen', 'lecturer'])) ? 'lecturer' : 'admin';
+
         Auth::guard('web')->logout();
-        
+
         $request->session()->invalidate();
         $request->session()->regenerateToken();
-        
+
         if ($userId) {
-            $this->logAuth('admin', $userId, null, 'logout');
+            $this->logAuth($actorType, $userId, null, 'logout');
         }
 
-        return redirect()->route('admin.login');
+        return redirect()->route('login');
     }
 
     private function logAuth($type, $id, $identifier, $event, $reason = null)

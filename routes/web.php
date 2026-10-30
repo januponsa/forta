@@ -24,7 +24,12 @@ use Illuminate\Support\Facades\Route;
 // Public Home
 Route::get('/', \App\Livewire\Public\LandingPage::class)->name('home');
 
-// --- Student Authentication ---
+// --- Unified Authentication (Single Login for Student, Lecturer/Dosen, and Admin) ---
+Route::get('/login', [AdminAuthController::class, 'showLogin'])->name('login');
+Route::post('/login', [AdminAuthController::class, 'loginCredential'])->name('login.submit');
+Route::get('/auth/google/redirect', [StudentAuthController::class, 'redirectGoogle'])->name('auth.google.redirect');
+
+// --- Student Authentication (Backward-compatible aliases) ---
 Route::get('/login/mahasiswa', [StudentAuthController::class, 'showLogin'])->name('student.login');
 Route::get('/auth/google/student/redirect', [StudentAuthController::class, 'redirectGoogle'])->name('student.google.login');
 Route::get('/auth/google/student/callback', [StudentAuthController::class, 'callbackGoogle'])->name('student.google.callback');
@@ -34,7 +39,7 @@ Route::post('/logout', [StudentAuthController::class, 'logout'])->name('logout')
 Route::get('/pendaftaran-mahasiswa', \App\Livewire\Public\StudentRegistration::class)->name('student.registration');
 Route::get('/pendaftaran-mahasiswa/status', \App\Livewire\Public\RegistrationStatus::class)->name('student.registration.status');
 
-// --- Admin Authentication ---
+// --- Admin / Staff Authentication (Backward-compatible aliases) ---
 Route::get('/admin/login', [AdminAuthController::class, 'showLogin'])->name('admin.login');
 Route::post('/admin/login', [AdminAuthController::class, 'loginCredential'])->name('admin.login.submit');
 Route::get('/auth/google/admin/redirect', [AdminAuthController::class, 'redirectGoogle'])->name('admin.google.login');
@@ -92,13 +97,13 @@ Route::prefix('admin')->middleware(['admin'])->group(function () {
         Route::get('/dashboard', \App\Livewire\Admin\Defense\Dashboard::class)->name('dashboard');
         Route::get('/participants', \App\Livewire\Admin\Defense\ParticipantManager::class)->name('participants');
         Route::get('/schedule', \App\Livewire\Admin\Defense\ScheduleManager::class)->name('schedule');
-                Route::get('/mentor-score', \App\Livewire\Admin\Defense\MentorScoreInput::class)->name('mentor-score');
+        Route::get('/mentor-score', \App\Livewire\Admin\Defense\MentorScoreInput::class)->name('mentor-score');
         Route::get('/{defense}/mentor-document/preview', [\App\Http\Controllers\MentorDocumentController::class, 'preview'])->name('mentor-document.preview');
         Route::get('/{defense}/mentor-document/download', [\App\Http\Controllers\MentorDocumentController::class, 'download'])->name('mentor-document.download');
         
         // Generated Documents Download
         Route::get('/documents/{id}/download', [\App\Http\Controllers\GeneratedDocumentController::class, 'download'])->name('documents.download');
-                Route::get('/recap', \App\Livewire\Admin\Defense\RecapAndDocuments::class)->name('recap');
+        Route::get('/recap', \App\Livewire\Admin\Defense\RecapAndDocuments::class)->name('recap');
         Route::get('/score/{caseId}/{role}', \App\Livewire\Admin\Defense\AdminAssessmentForm::class)->name('score');
     });
 });

@@ -126,7 +126,9 @@
     <tr>
         <td style="border: none; width: 50%; text-align: left; vertical-align: top;">
             <div>Mahasiswa Ybs.,</div>
-            <div style="height: 60px;"></div>
+            <div style="height: 60px; font-size: 9pt; color: #777; font-style: italic; padding-top: 20px;">
+                Disetujui via sistem
+            </div>
             <div>{{ $student->name }}</div>
             <div>NIM &nbsp; {{ $student->nim }}</div>
         </td>

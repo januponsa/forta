@@ -1,14 +1,14 @@
 <div>
-    @section('title', 'Manajemen Admin User')
+    @section('title', 'Manajemen Admin & User')
 
     <div class="mb-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
-            <h2 class="text-2xl font-bold text-slate-800">Manajemen Admin User</h2>
-            <p class="text-sm text-slate-500 mt-1">Kelola akses akun administrator sistem Fortain.</p>
+            <h2 class="text-2xl font-bold text-slate-800">Manajemen Admin &amp; User</h2>
+            <p class="text-sm text-slate-500 mt-1">Kelola akses akun pengelola dan dosen pada sistem FORTA.</p>
         </div>
         <button wire:click="create" class="bg-teal-600 hover:bg-teal-700 text-white font-semibold py-2 px-4 rounded-lg shadow-sm transition-colors flex items-center">
             <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
-            Tambah Admin
+            Tambah User
         </button>
     </div>
 
@@ -89,7 +89,7 @@
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                 <button wire:click="edit({{ $user->id }})" class="text-indigo-600 hover:text-indigo-900 bg-indigo-50 hover:bg-indigo-100 px-3 py-1.5 rounded-md transition-colors mr-2">Edit</button>
-                                <button wire:click="delete({{ $user->id }})" class="text-red-600 hover:text-red-900 bg-red-50 hover:bg-red-100 px-3 py-1.5 rounded-md transition-colors" wire:confirm="Yakin ingin menghapus admin ini?">Hapus</button>
+                                <button wire:click="delete({{ $user->id }})" class="text-red-600 hover:text-red-900 bg-red-50 hover:bg-red-100 px-3 py-1.5 rounded-md transition-colors" wire:confirm="Yakin ingin menghapus user ini?">Hapus</button>
                             </td>
                         </tr>
                     @empty
@@ -97,9 +97,9 @@
                             <td colspan="4" class="px-6 py-8 whitespace-nowrap text-sm text-slate-500 text-center">
                                 <svg class="mx-auto h-12 w-12 text-slate-300 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
                                 @if($search)
-                                    Tidak ada admin yang sesuai dengan kata kunci "{{ $search }}".
+                                    Tidak ada user yang sesuai dengan kata kunci "{{ $search }}".
                                 @else
-                                    Belum ada data admin.
+                                    Belum ada data user.
                                 @endif
                             </td>
                         </tr>
@@ -122,7 +122,7 @@
             <div class="relative inline-block align-bottom bg-white rounded-xl text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full border border-slate-200">
                 <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4 border-b border-slate-100">
                     <h3 class="text-lg leading-6 font-bold text-slate-900" id="modal-title">
-                        {{ $userId ? 'Edit Admin User' : 'Tambah Admin User Baru' }}
+                        {{ $userId ? 'Edit User' : 'Tambah User Baru' }}
                     </h3>
                 </div>
                 <form wire:submit.prevent="store">
@@ -135,7 +135,7 @@
                         </div>
 
                         <div>
-                            <label for="username" class="block text-sm font-semibold text-slate-700">Username <span class="text-red-500">*</span></label>
+                            <label for="username" class="block text-sm font-semibold text-slate-700">Username / NIP <span class="text-red-500">*</span></label>
                             <input type="text" wire:model="username" id="username" class="mt-1 focus:ring-teal-500 focus:border-teal-500 block w-full shadow-sm sm:text-sm border-slate-300 rounded-md py-2 px-3">
                             @error('username') <span class="text-red-500 text-xs mt-1 block">{{ $message }}</span> @enderror
                         </div>
@@ -157,6 +157,8 @@
                                 <label for="role" class="block text-sm font-semibold text-slate-700">Role</label>
                                 <select wire:model="role" id="role" class="mt-1 block w-full py-2 px-3 border border-slate-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-teal-500 focus:border-teal-500 sm:text-sm">
                                     <option value="admin_forta">Admin Forta</option>
+                                    <option value="superadmin">Superadmin</option>
+                                    <option value="dosen">Dosen</option>
                                 </select>
                                 @error('role') <span class="text-red-500 text-xs mt-1 block">{{ $message }}</span> @enderror
                             </div>

@@ -44,7 +44,7 @@
     $npem_display = round($npem_raw);
     
     $final_raw = ($np1_raw * 0.3) + ($np2_raw * 0.4) + ($npem_raw * 0.3);
-    $final_display = round($final_raw);
+    $final_display = isset($case->final_score) ? number_format($case->final_score, 2) : number_format($final_raw, 2);
     
     // Huruf Mutu
     $huruf_mutu = 'E';
@@ -56,6 +56,10 @@
     elseif ($final_raw >= 65) $huruf_mutu = 'C+';
     elseif ($final_raw >= 60) $huruf_mutu = 'C';
     elseif ($final_raw >= 50) $huruf_mutu = 'D';
+
+    if (!empty($case->final_grade)) {
+        $huruf_mutu = $case->final_grade;
+    }
 @endphp
 
 <table class="info-table" style="margin-bottom: 15px;">

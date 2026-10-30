@@ -418,7 +418,7 @@
                         <p class="text-sm text-slate-600 line-clamp-2 mb-4">{{ $form->description }}</p>
                     </div>
                     <div class="bg-slate-50 px-5 py-4 border-t border-slate-100">
-                        <a href="{{ route('student.login') }}" class="w-full text-center inline-flex justify-center items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-teal-600 hover:bg-teal-700 transition">
+                        <a href="{{ route('login') }}" class="w-full text-center inline-flex justify-center items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-teal-600 hover:bg-teal-700 transition">
                             Isi Form
                         </a>
                     </div>

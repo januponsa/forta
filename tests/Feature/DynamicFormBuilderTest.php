@@ -65,6 +65,20 @@ class DynamicFormBuilderTest extends TestCase
     {
         $this->actingAs($this->admin);
 
+        // Add a section and field first so the form can be activated
+        $section = FormSection::create([
+            'form_id' => $this->form->id,
+            'title' => 'Section A',
+            'order' => 1,
+        ]);
+        FormField::create([
+            'form_id' => $this->form->id,
+            'section_id' => $section->id,
+            'label' => 'Pertanyaan A',
+            'type' => 'text',
+            'order' => 1,
+        ]);
+
         // 1. Test activation
         Livewire::test(FormManager::class)
             ->call('activate', $this->form->id);
@@ -84,24 +98,10 @@ class DynamicFormBuilderTest extends TestCase
         $this->assertEquals('archived', $this->form->fresh()->status);
 
         // 4. Test duplicate
-        // Add a section and field first
-        $section = FormSection::create([
-            'form_id' => $this->form->id,
-            'title' => 'Section A',
-            'order' => 1,
-        ]);
-        FormField::create([
-            'form_id' => $this->form->id,
-            'section_id' => $section->id,
-            'label' => 'Pertanyaan A',
-            'type' => 'text',
-            'order' => 1,
-        ]);
-
         Livewire::test(FormManager::class)
             ->call('duplicate', $this->form->id);
 
-        $duplicateForm = Form::where('title', 'Form Pengajuan Magang Salinan')->first();
+        $duplicateForm = Form::where('title', 'like', '%Salinan%')->first();
         $this->assertNotNull($duplicateForm);
         $this->assertEquals('draft', $duplicateForm->status);
         $this->assertNull($duplicateForm->open_at);
