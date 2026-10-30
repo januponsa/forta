@@ -31,15 +31,25 @@ class AdminAuthController extends Controller
         return view('admin.login');
     }
 
+    private function resolveRedirectUrl(): string
+    {
+        $configured = config('services.google.admin_redirect') ?: config('services.google.student_redirect');
+        $host = request()->getHost();
+
+        if (empty($configured) || (!in_array($host, ['localhost', '127.0.0.1']) && str_contains($configured, 'localhost'))) {
+            return url('/auth/google/admin/callback');
+        }
+
+        return $configured;
+    }
+
     /**
      * Redirect to Google OAuth (Admin/Unified endpoint).
      */
     public function redirectGoogle()
     {
-        $redirectUrl = config('services.google.admin_redirect') ?: config('services.google.student_redirect');
-
         return Socialite::driver('google')
-            ->redirectUrl($redirectUrl)
+            ->redirectUrl($this->resolveRedirectUrl())
             ->redirect();
     }
 
@@ -48,11 +58,9 @@ class AdminAuthController extends Controller
      */
     public function callbackGoogle(Request $request)
     {
-        $redirectUrl = config('services.google.admin_redirect') ?: config('services.google.student_redirect');
-
         try {
             $googleUser = Socialite::driver('google')
-                ->redirectUrl($redirectUrl)
+                ->redirectUrl($this->resolveRedirectUrl())
                 ->user();
         } catch (\Exception $e) {
             return redirect()->route('login')->with('error', 'Gagal login dengan Google.');

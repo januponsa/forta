@@ -39,11 +39,11 @@ return [
         'client_id' => env('GOOGLE_CLIENT_ID'),
         'client_secret' => env('GOOGLE_CLIENT_SECRET'),
 
-        // Redirect default hanya sebagai fallback.
-        'redirect' => env('GOOGLE_STUDENT_REDIRECT_URI'),
+        // Redirect default otomatis menyesuaikan APP_URL jika variabel env belum diisi di VPS.
+        'redirect' => env('GOOGLE_STUDENT_REDIRECT_URI') ?: (rtrim(env('APP_URL', 'http://localhost:8000'), '/') . '/auth/google/student/callback'),
 
-        'student_redirect' => env('GOOGLE_STUDENT_REDIRECT_URI'),
-        'admin_redirect' => env('GOOGLE_ADMIN_REDIRECT_URI'),
+        'student_redirect' => env('GOOGLE_STUDENT_REDIRECT_URI') ?: (rtrim(env('APP_URL', 'http://localhost:8000'), '/') . '/auth/google/student/callback'),
+        'admin_redirect' => env('GOOGLE_ADMIN_REDIRECT_URI') ?: (rtrim(env('APP_URL', 'http://localhost:8000'), '/') . '/auth/google/admin/callback'),
     ],
 
 ];

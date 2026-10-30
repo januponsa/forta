@@ -24,10 +24,22 @@ class StudentAuthController extends Controller
         return view('admin.login');
     }
 
+    private function resolveRedirectUrl(): string
+    {
+        $configured = config('services.google.student_redirect');
+        $host = request()->getHost();
+
+        if (empty($configured) || (!in_array($host, ['localhost', '127.0.0.1']) && str_contains($configured, 'localhost'))) {
+            return url('/auth/google/student/callback');
+        }
+
+        return $configured;
+    }
+
     public function redirectGoogle()
     {
         return Socialite::driver('google')
-            ->redirectUrl(config('services.google.student_redirect'))
+            ->redirectUrl($this->resolveRedirectUrl())
             ->redirect();
     }
 
@@ -35,7 +47,7 @@ class StudentAuthController extends Controller
     {
         try {
             $googleUser = Socialite::driver('google')
-                ->redirectUrl(config('services.google.student_redirect'))
+                ->redirectUrl($this->resolveRedirectUrl())
                 ->user();
         } catch (\Exception $e) {
             return redirect()->route('login')->with('error', 'Gagal login dengan Google.');

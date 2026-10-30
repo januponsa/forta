@@ -5,14 +5,40 @@ echo "===================================================="
 echo "  FORTA VPS AUTO-UPDATE & DATABASE SYNC SCRIPT"
 echo "===================================================="
 
-echo "[1/6] Menarik kode terbaru dari GitHub (origin/main)..."
+echo "[1/7] Menarik kode terbaru dari GitHub (origin/main)..."
 git fetch origin main
 git reset --hard origin/main
 
-echo "[2/6] Memastikan dependensi Composer..."
+echo "[2/7] Memastikan konfigurasi Google OAuth di file .env VPS..."
+php -r '
+$envFile = ".env";
+if (file_exists($envFile)) {
+    $env = file_get_contents($envFile);
+    $defaults = [
+        "GOOGLE_STUDENT_REDIRECT_URI" => "https://forta.patriontech.com/auth/google/student/callback",
+        "GOOGLE_ADMIN_REDIRECT_URI" => "https://forta.patriontech.com/auth/google/admin/callback",
+        "STUDENT_DOMAIN" => "student.pradita.ac.id",
+        "ADMIN_DOMAIN" => "pradita.ac.id",
+    ];
+    foreach ($defaults as $key => $val) {
+        if (preg_match("/^{$key}=(.*)$/m", $env, $m)) {
+            $current = trim($m[1], " \t\n\r\0\x0B\"'\''");
+            if ($current === "" || str_contains($current, "localhost")) {
+                $env = preg_replace("/^{$key}=.*$/m", "{$key}={$val}", $env);
+            }
+        } else {
+            $env = rtrim($env) . "\n{$key}={$val}\n";
+        }
+    }
+    file_put_contents($envFile, $env);
+    echo "Konfigurasi Google OAuth pada .env VPS telah diverifikasi.\n";
+}
+'
+
+echo "[3/7] Memastikan dependensi Composer..."
 composer install --no-interaction --prefer-dist --optimize-autoloader
 
-echo "[3/6] Mengimpor database terbaru (forta_db.sql) termasuk seluruh data dummy & akun dosen..."
+echo "[4/7] Mengimpor database terbaru (forta_db.sql) termasuk seluruh data dummy & akun dosen..."
 php -r '
 require "vendor/autoload.php";
 $app = require_once "bootstrap/app.php";
@@ -40,7 +66,7 @@ if ($ret !== 0) {
 echo "Database forta_db.sql berhasil diimpor ke database: $db\n";
 '
 
-echo "[4/6] Menjalankan migrasi & sinkronisasi akun dosen serta file lampiran dummy..."
+echo "[5/7] Menjalankan migrasi & sinkronisasi akun dosen serta file lampiran dummy..."
 php artisan migrate --force
 php artisan db:seed --class=LecturerAccountSeeder --force
 
@@ -74,14 +100,14 @@ foreach (SubmissionFile::all() as $file) {
 echo "Berkas fisik PDF dummy telah diverifikasi di storage.\n";
 '
 
-echo "[5/6] Memperbarui symlink storage & kompilasi aset frontend (Vite)..."
+echo "[6/7] Memperbarui symlink storage & kompilasi aset frontend (Vite)..."
 php artisan storage:link || true
 if command -v npm >/dev/null 2>&1; then
     npm install --no-audit --no-fund
     npm run build
 fi
 
-echo "[6/6] Membersihkan cache Laravel & merapikan permission..."
+echo "[7/7] Membersihkan cache Laravel & merapikan permission..."
 php artisan optimize:clear
 chmod -R ug+rwx storage bootstrap/cache 2>/dev/null || true
 
